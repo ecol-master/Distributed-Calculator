@@ -24,7 +24,7 @@ func GetOperationRank(operation string) int {
 
 type Expression struct {
 	expression     string
-	polishNotation string
+	PolishNotation string
 	stackOpeations *stack.Stack[string]
 	stackNumbers   *stack.Stack[int]
 }
@@ -32,7 +32,7 @@ type Expression struct {
 func NewExpression(expression string) *Expression {
 	return &Expression{
 		expression:     expression,
-		polishNotation: "",
+		PolishNotation: "",
 		stackOpeations: stack.NewStack[string](),
 		stackNumbers:   stack.NewStack[int](),
 	}
@@ -66,7 +66,7 @@ func (e *Expression) AddHigherOpsToExp(operation string) {
 			}
 
 			if lastOpRank >= operaionRank {
-				e.polishNotation += lastOperaion + " "
+				e.PolishNotation += lastOperaion + " "
 			} else {
 				e.stackOpeations.Push(lastOperaion)
 				break
@@ -75,12 +75,12 @@ func (e *Expression) AddHigherOpsToExp(operation string) {
 	}
 }
 
-func (e *Expression) ParseExpression() string {
+func (e *Expression) ParseExpression() error {
 	for _, value := range strings.Split(strings.Trim(e.expression, "\n ,.!?"), " ") {
 		_, err := strconv.Atoi(value)
 		if err == nil {
 			// то есть числоL
-			e.polishNotation += value + " "
+			e.PolishNotation += value + " "
 			continue
 		}
 		// теперь рассматриваем строку
@@ -90,14 +90,14 @@ func (e *Expression) ParseExpression() string {
 		}
 	}
 	for _, op := range e.stackOpeations.Array {
-		e.polishNotation += op + " "
+		e.PolishNotation += op + " "
 	}
-	return e.polishNotation
+	return nil
 }
 
 func (e *Expression) CalculateExpression() int {
 
-	for _, value := range strings.Split(strings.Trim(e.polishNotation, " \n"), " ") {
+	for _, value := range strings.Split(strings.Trim(e.PolishNotation, " \n"), " ") {
 		number, err := strconv.Atoi(value)
 		if err == nil {
 			e.stackNumbers.Push(number)
