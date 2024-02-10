@@ -1,122 +1,28 @@
 package calculator
 
 import (
-	"errors"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/ecol-master/distributed_calculator/pkg/cache"
+	conf "github.com/ecol-master/distributed_calculator/pkg/config"
+	ex "github.com/ecol-master/distributed_calculator/pkg/expression"
 	"github.com/ecol-master/distributed_calculator/pkg/stack"
 )
 
-var (
-	ErrOperationIsNotValid = errors.New("opeation is not valid")
-)
-
-func GetOperationRank(operation string) (int, error) {
-	if operation == "+" || operation == "-" {
-		return 1, nil
-	}
-	if operation == "*" || operation == "/" {
-		return 2, nil
-	}
-	if operation == "(" || operation == ")" {
-		return 3, nil
-	}
-	return -1, ErrOperationIsNotValid
-}
-
 type Calculator struct {
-	// PolishNotation string
-	// stackNumbers   *stack.Stack[int]
+	config *conf.Config
 }
 
-type Expression struct {
-	ExpressionID   string
-	PolishNotation string
-	// stackOpeations *stack.Stack[string]
-}
-
-func NewCalculator() *Calculator {
-
+func NewCalculator(cfg *conf.Config) *Calculator {
 	return &Calculator{
-		// expression:     expression,
-		// PolishNotation: "",
-		// stackOpeations: stack.NewStack[string](),
-		// stackNumbers: stack.NewStack[int](),
+		config: cfg,
 	}
 }
 
-func NewExpression(expression string, expressionID string) (*Expression, error) {
-	polishNotation, err := convertExprToPN(expression)
-	if err != nil {
-		return &Expression{}, err
-	}
+func (c *Calculator) CalculateExpression(ch *cache.Cache, expr *ex.Expression) {
 
-	return &Expression{
-		PolishNotation: polishNotation,
-		ExpressionID:   expressionID,
-	}, nil
-}
-
-func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, operation string) (string, *stack.Stack[string], error) {
-	if operation == ")" {
-		for len(stackOperations.Array) > 0 {
-			if stackOperations.Array[len(stackOperations.Array)-1] == "(" {
-				stackOperations.Pop()
-				break
-			}
-			value, err := stackOperations.Pop()
-			if err == nil {
-				stackOperations.Push(value)
-			}
-		}
-		return polishNotation, stackOperations, nil
-	}
-	size := len(stackOperations.Array)
-	operaionRank, _ := GetOperationRank(operation)
-	for i := 0; i < size; i++ {
-		lastOperaion, err := stackOperations.Pop()
-		if err != nil {
-			break
-		}
-		lastOpRank, _ := GetOperationRank(lastOperaion)
-		if lastOpRank == 3 {
-			stackOperations.Push(lastOperaion)
-			break
-		}
-
-		if lastOpRank < operaionRank {
-			stackOperations.Push(lastOperaion)
-			break
-		}
-		polishNotation += lastOperaion + " "
-	}
-	return polishNotation, stackOperations, nil
-}
-
-// PN - polish notation
-func convertExprToPN(expr string) (string, error) {
-	stackOperations := stack.NewStack[string]()
-	polishNotation := ""
-	for _, value := range strings.Split(strings.Trim(expr, "\n ,.!?"), " ") {
-		_, err := strconv.Atoi(value)
-		if err == nil {
-			polishNotation += value + " "
-			continue
-		}
-		polishNotation, stackOperations, _ = addHigherOpsToPN(stackOperations, polishNotation, value)
-
-		if value != ")" {
-			stackOperations.Push(value)
-		}
-	}
-	for i := len(stackOperations.Array) - 1; i >= 0; i-- {
-		polishNotation += stackOperations.Array[i] + " "
-	}
-	return polishNotation, nil
-}
-
-func (c *Calculator) CalculateExpression(expr *Expression) int {
 	stackNumbers := stack.NewStack[int]()
 
 	for _, value := range strings.Split(strings.Trim(expr.PolishNotation, " \n"), " ") {
@@ -126,19 +32,64 @@ func (c *Calculator) CalculateExpression(expr *Expression) int {
 			continue
 		}
 		if value == "+" {
-			stack.Sum(stackNumbers)
+			Sum(stackNumbers)
+			time.Sleep(c.config.SumDelay)
 		} else if value == "-" {
-			stack.Diff(stackNumbers)
+			Diff(stackNumbers)
+			time.Sleep(c.config.DiffDelay)
 		} else if value == "*" {
-			stack.Multiply(stackNumbers)
+			Multiply(stackNumbers)
+			time.Sleep(c.config.MultiplyDelay)
 		} else if value == "/" {
-			stack.Devide(stackNumbers)
+			Devide(stackNumbers)
+			time.Sleep(c.config.DevideDelay)
 		}
 	}
 
 	res, err := stackNumbers.Pop()
 	if err != nil {
-		return -1
+		expr.Status = ex.StatusError
+	} else {
+		expr.Result = res
+		expr.Status = ex.StatusFinished
 	}
-	return res
+
+	ch.Update(expr)
+}
+
+func GetTwoValues(s *stack.Stack[int]) (int, int, error) {
+	n1, err1 := s.Pop()
+	n2, err2 := s.Pop()
+	if err1 != nil || err2 != nil {
+		return 0, 0, stack.ErrGetElementFromStack
+	}
+	return n1, n2, nil
+}
+
+func Sum(s *stack.Stack[int]) {
+	n1, n2, err := GetTwoValues(s)
+	if err == nil {
+		s.Push(n2 + n1)
+	}
+}
+
+func Diff(s *stack.Stack[int]) {
+	n1, n2, err := GetTwoValues(s)
+	if err == nil {
+		s.Push(n2 - n1)
+	}
+}
+
+func Multiply(s *stack.Stack[int]) {
+	n1, n2, err := GetTwoValues(s)
+	if err == nil {
+		s.Push(n2 * n1)
+	}
+}
+
+func Devide(s *stack.Stack[int]) {
+	n1, n2, err := GetTwoValues(s)
+	if err == nil {
+		s.Push(n2 / n1)
+	}
 }

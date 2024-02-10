@@ -1,0 +1,52 @@
+.expression {
+}
+
+.experssion__title {
+}
+
+.experssion__content {
+    display: flex;
+    flex-direction: column;
+}
+
+.experssion__main {
+    margin-top: 20px;
+}
+
+/* .experssion__main input {
+    margin-right: 20px;
+}
+
+.experssion__main input {
+    font-family: inherit;
+    width: 100%;
+    border: 0;
+    border-bottom: 2px solid #11998e;
+    outline: 0;
+    font-size: 1.3rem;
+    color: #fff;
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+
+    &::placeholder {
+        color: transparent;
+    }
+
+    &:placeholder-shown ~ .form__label {
+        font-size: 1.3rem;
+        cursor: text;
+        top: 20px;
+    }
+}
+
+reset input 
+experssion__main input {
+    &:required,
+    &:invalid {
+        box-shadow: none; 
+    } 
+} */
+
+.expression__result {
+}

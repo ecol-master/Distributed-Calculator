@@ -1,0 +1,44 @@
+@font-face {
+    font-family: 'Accurastic';
+    src: url('../../../assets/Accuratist.ttf');
+}
+
+.expr__view {
+    
+    padding: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+.expr__view__main {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.expr__view__main p {
+    margin: 0px;
+}
+
+.view__value{
+    font-family: "Accurastic";
+    font-size: 20px;
+}
+
+.expr__view__result {
+    display: flex;
+}
+
+.expr__view__result p {
+    margin: auto;
+    font-size: 20px;
+    font-family: "Accurastic";
+    margin-right: 15px;
+}
+
+.expr__view__result div {
+margin: auto;
+}

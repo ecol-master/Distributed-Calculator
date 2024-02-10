@@ -1,0 +1,51 @@
+.config__settings {
+}
+
+.settings__title{
+    display: flex;
+    justify-content: space-between;
+}
+
+.settings {
+}
+
+.settings_buttons{
+    align-self: center;
+}
+
+.settings_buttons button{
+    /* margin: auto 0; */
+    width: 122px;
+    height: 34px;
+}
+
+.update {
+    margin-right: 20px;
+}
+
+.set_new_value {
+}
+
+.settings_values {
+}
+
+.settings__operation {
+    display: flex;   
+    margin: 15px 0px;
+    /* border: 1px solid black; */
+    /* padding: 5px; */
+    width: fit-content;
+    border-radius: 5px;
+}
+
+
+
+.settings__operation p{
+    width: 150px;
+}
+
+.settings__operation input{
+    padding: 3px;
+    height: fit-content;
+    align-self: center;
+}
