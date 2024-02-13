@@ -10,12 +10,16 @@ import (
 	calc "distributed_calculator/pkg/calculator"
 	conf "distributed_calculator/pkg/config"
 	ex "distributed_calculator/pkg/expression"
+	// storage "distributed_calculator/pkg/storage"
 )
 
 var (
 	config     = conf.NewConfig()
 	calculator = calc.NewCalculator(config)
 	cache      = ch.NewCache()
+
+	// next time should add this block to use
+	// appStorage = storage.NewStorage("json.data")
 )
 
 type Response struct {
