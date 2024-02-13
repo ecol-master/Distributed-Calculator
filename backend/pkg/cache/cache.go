@@ -1,7 +1,7 @@
 package cache
 
 import (
-	ex "github.com/ecol-master/distributed_calculator/pkg/expression"
+	ex "distributed_calculator/pkg/expression"
 	"sync"
 )
 

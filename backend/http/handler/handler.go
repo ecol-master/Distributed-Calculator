@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	ch "github.com/ecol-master/distributed_calculator/pkg/cache"
-	calc "github.com/ecol-master/distributed_calculator/pkg/calculator"
-	conf "github.com/ecol-master/distributed_calculator/pkg/config"
-	ex "github.com/ecol-master/distributed_calculator/pkg/expression"
+	ch "distributed_calculator/pkg/cache"
+	calc "distributed_calculator/pkg/calculator"
+	conf "distributed_calculator/pkg/config"
+	ex "distributed_calculator/pkg/expression"
 )
 
 var (

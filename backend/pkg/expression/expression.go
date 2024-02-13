@@ -1,9 +1,9 @@
 package expression
 
 import (
+	"distributed_calculator/pkg/stack"
 	"errors"
 	"fmt"
-	"github.com/ecol-master/distributed_calculator/pkg/stack"
 	"strconv"
 	"strings"
 )

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ecol-master/distributed_calculator/http"
+	"distributed_calculator/http"
 )
 
 func main() {

@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ecol-master/distributed_calculator/pkg/cache"
-	conf "github.com/ecol-master/distributed_calculator/pkg/config"
-	ex "github.com/ecol-master/distributed_calculator/pkg/expression"
-	"github.com/ecol-master/distributed_calculator/pkg/stack"
+	"distributed_calculator/pkg/cache"
+	conf "distributed_calculator/pkg/config"
+	ex "distributed_calculator/pkg/expression"
+	"distributed_calculator/pkg/stack"
 )
 
 type Calculator struct {

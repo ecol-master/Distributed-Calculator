@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	ex "github.com/ecol-master/distributed_calculator/pkg/expression"
+	ex "distributed_calculator/pkg/expression"
 )
 
 type CalculatorConcurrency struct{}

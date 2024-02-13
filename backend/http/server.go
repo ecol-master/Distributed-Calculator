@@ -1,10 +1,11 @@
 package http
 
 import (
-	"github.com/ecol-master/distributed_calculator/http/handler"
+	"distributed_calculator/http/handler"
+	"net/http"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func Run() {

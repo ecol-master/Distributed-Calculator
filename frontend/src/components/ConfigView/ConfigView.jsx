@@ -22,7 +22,6 @@ export const ConfigView = () => {
             setMultiplyDelay(response.data.multiplyDelay / NanoSecToSec)
             setDevideDelay(response.data.devideDelay / NanoSecToSec)
         })
-        console.log("config", config)
     }
 
     const onChangeSumDelay = (event) => {
@@ -42,9 +41,8 @@ export const ConfigView = () => {
     }
 
     useEffect(() => {
-        if (isLoaded) {
-            return
-        }
+        if (isLoaded) return
+
         fetchConfig()
         setIsLoaded(true)
     }, [config])
@@ -94,31 +92,19 @@ export const ConfigView = () => {
                     <div className="settings_values">
                         <div className="settings__operation">
                             <p>Sum Delay</p>
-                            <input
-                                value={sumDelay}
-                                onChange={onChangeSumDelay}
-                            ></input>
+                            <input value={sumDelay} onChange={onChangeSumDelay}></input>
                         </div>
                         <div className="settings__operation">
                             <p>Diff Delay</p>
-                            <input
-                                value={diffDelay}
-                                onChange={onChangeDiffDelay}
-                            ></input>
+                            <input value={diffDelay} onChange={onChangeDiffDelay}></input>
                         </div>
                         <div className="settings__operation">
                             <p>Multiply Delay</p>
-                            <input
-                                value={multiplyDelay}
-                                onChange={onChangeMultiplyDelay}
-                            ></input>
+                            <input value={multiplyDelay} onChange={onChangeMultiplyDelay}></input>
                         </div>
                         <div className="settings__operation">
                             <p>Devide Delay</p>
-                            <input
-                                value={devideDelay}
-                                onChange={onChangeDevideDelay}
-                            ></input>
+                            <input value={devideDelay} onChange={onChangeDevideDelay}></input>
                         </div>
                     </div>
                 </div>
