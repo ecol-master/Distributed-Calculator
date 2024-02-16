@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"distributed_calculator/pkg/cache"
 	conf "distributed_calculator/pkg/config"
 	ex "distributed_calculator/pkg/expression"
 	"distributed_calculator/pkg/stack"
+	"distributed_calculator/pkg/storage"
 )
 
 type Calculator struct {
@@ -21,7 +21,7 @@ func NewCalculator(cfg *conf.Config) *Calculator {
 	}
 }
 
-func (c *Calculator) CalculateExpression(ch *cache.Cache, expr *ex.Expression) {
+func (c *Calculator) CalculateExpression(appStorage *storage.Storage, expr *ex.Expression) {
 
 	stackNumbers := stack.NewStack[int]()
 
@@ -54,7 +54,7 @@ func (c *Calculator) CalculateExpression(ch *cache.Cache, expr *ex.Expression) {
 		expr.Status = ex.StatusFinished
 	}
 
-	ch.Update(expr)
+	appStorage.Update(*expr)
 }
 
 func GetTwoValues(s *stack.Stack[int]) (int, int, error) {

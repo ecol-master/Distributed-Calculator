@@ -40,7 +40,8 @@ func GetOperationRank(operation string) (int, error) {
 	return -1, ErrOperationIsNotValid
 }
 
-func NewExpression(expression string, expressionID string) (*Expression, error) {
+func NewExpression(exprValue string, expressionID string) (*Expression, error) {
+	expression := parseExpressionValue(exprValue)
 	expr := &Expression{
 		Expression:   expression,
 		ExpressionID: expressionID,
@@ -55,6 +56,14 @@ func NewExpression(expression string, expressionID string) (*Expression, error) 
 	expr.PolishNotation = polishNotation
 	expr.Status = StatusCalculating
 	return expr, nil
+}
+
+// функция форматирует данные из запроса в арифметическое выражение
+func parseExpressionValue(exprValue string) string {
+	exprValue = strings.Replace(exprValue, "PP", "+", -1)
+	exprValue = strings.Replace(exprValue, "BO", "(", -1)
+	exprValue = strings.Replace(exprValue, "BC", ")", -1)
+	return exprValue
 }
 
 func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, operation string) (string, *stack.Stack[string], error) {

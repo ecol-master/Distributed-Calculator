@@ -4,22 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
+	"time"
 
-	ch "distributed_calculator/pkg/cache"
 	calc "distributed_calculator/pkg/calculator"
 	conf "distributed_calculator/pkg/config"
 	ex "distributed_calculator/pkg/expression"
-	// storage "distributed_calculator/pkg/storage"
+	storage "distributed_calculator/pkg/storage"
 )
 
 var (
 	config     = conf.NewConfig()
 	calculator = calc.NewCalculator(config)
-	cache      = ch.NewCache()
 
-	// next time should add this block to use
-	// appStorage = storage.NewStorage("json.data")
+	syncStorageInterval = time.Second * 5
+	appStorage          = storage.NewStorage("../data/data.json", syncStorageInterval)
 )
 
 type Response struct {
@@ -33,13 +31,13 @@ type Response struct {
 func HandlerNewExpression(w http.ResponseWriter, r *http.Request) {
 	var response Response
 
-	exprValue := parseExpressionValue(r)
+	exprValue := r.URL.Query().Get("value")
 	expressionID := r.URL.Query().Get("id")
 
 	expression, err := ex.NewExpression(exprValue, expressionID)
-	cache.AddExpression(expression)
+	appStorage.AddExpression(*expression)
 
-	go calculator.CalculateExpression(cache, expression)
+	go calculator.CalculateExpression(appStorage, expression)
 	if err != nil {
 		response.StatusCode = 400
 		response.ExpressionID = expressionID
@@ -54,19 +52,10 @@ func HandlerNewExpression(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// функция форматирует данные из запроса в арифметическое выражение
-func parseExpressionValue(r *http.Request) string {
-	exprValue := r.URL.Query().Get("value")
-	exprValue = strings.Replace(exprValue, "PP", "+", -1)
-	exprValue = strings.Replace(exprValue, "BO", "(", -1)
-	exprValue = strings.Replace(exprValue, "BC", ")", -1)
-	return exprValue
-}
-
 func HandlerListExpressions(w http.ResponseWriter, r *http.Request) {
 	result := []ex.Expression{}
-	for _, v := range cache.GetAllData() {
-		result = append(result, *v)
+	for _, v := range appStorage.Data() {
+		result = append(result, v)
 	}
 	fmt.Println(result)
 	data, err := json.Marshal(result)
@@ -79,7 +68,7 @@ func HandlerListExpressions(w http.ResponseWriter, r *http.Request) {
 
 func HandlerGetOneExpression(w http.ResponseWriter, r *http.Request) {
 	expressionID := r.URL.Query().Get("id")
-	expression, found := cache.GetExpressionByID(expressionID)
+	expression, found := appStorage.GetExpressionByID(expressionID)
 
 	if !found {
 		fmt.Fprint(w, "{Error: true}")
