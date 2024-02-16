@@ -5,7 +5,6 @@ import axios from "axios"
 
 export const ExpressionBlock = () => {
     const [expression, setExpression] = useState("")
-    // const [response, setResponse] = useState({Result: 0})
 
     const handleChange = (event) => {
         setExpression(event.target.value)

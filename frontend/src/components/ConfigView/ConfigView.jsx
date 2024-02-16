@@ -42,7 +42,6 @@ export const ConfigView = () => {
 
     useEffect(() => {
         if (isLoaded) return
-
         fetchConfig()
         setIsLoaded(true)
     }, [config])

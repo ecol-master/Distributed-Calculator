@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'Days';
+    src: url('../../assets/Days.otf');
+}
+
 .tabs {
     max-width: 700px;
     margin: 0 auto;
@@ -22,6 +27,7 @@
     border-left: 0;
 }
 .tabs a {
+    font-family: "Days";
     background: #f5f5f5;
     border: 1px solid #cecfd5;
     color: #000;

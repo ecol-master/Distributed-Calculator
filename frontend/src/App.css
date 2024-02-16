@@ -1,9 +1,13 @@
+@font-face {
+    font-family: 'Days';
+    src: url('./assets/Days.otf');
+}
+
 .main_page{
     flex: 1 1 auto;
     width: 100%;
     max-width: 880px;
     margin: 0 auto;
-    /* margin: 20px; */
 }
 
 .main_page_wrapper{
@@ -11,10 +15,15 @@
 }
 
 .main{
-    /* max-width: 840px;
-    margin: 0 auto;*/
+    margin: 50px 0;
     height: 100%; 
     display: flex;
     flex-direction: column;
     justify-content: center;  
+}
+
+.main__content__wrapper h1{
+    font-family: "Days";
+    font-size: 38px;
+    text-align: center;
 }

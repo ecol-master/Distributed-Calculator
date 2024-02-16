@@ -1,38 +1,29 @@
 import "react"
-import {ExpressionBlock} from "../CreateExpression/CreateExpression"
-import {ListExpressions} from "../ListExpressions/ListExpressions"
-import {ConfigView} from "../ConfigView/ConfigView"
-import {useState} from "react"
+import { ExpressionBlock } from "../CreateExpression/CreateExpression"
+import { ListExpressions } from "../ListExpressions/ListExpressions"
+import { ConfigView } from "../ConfigView/ConfigView"
+import { useState } from "react"
 import "./Tabs.css"
 
 export const Tabs = () => {
     const [activeTab, setActiveTab] = useState(1)
 
     const getClass = (tabVal) => {
-        if (tabVal == activeTab) {
-            return "active"
-        }
+        if (tabVal == activeTab)return "active"
         return "hide"
     }
 
     return (
-        <>
             <div className="tabs">
                 <ul className="tabs-nav">
                     <li onClick={() => setActiveTab(1)}>
-                        <a className={getClass(1)} href="#tab-1">
-                            Create Expression
-                        </a>
+                        <a className={getClass(1)} href="#tab-1">Create Expression</a>
                     </li>
                     <li onClick={() => setActiveTab(2)}>
-                        <a className={getClass(2)} href="#tab-2">
-                            List of Expressions
-                        </a>
+                        <a className={getClass(2)} href="#tab-2">List of Expressions</a>
                     </li>
                     <li onClick={() => setActiveTab(3)}>
-                        <a className={getClass(3)} href="#tab-3">
-                            Tab Third
-                        </a>
+                        <a className={getClass(3)} href="#tab-3">Config Settings</a>
                     </li>
                 </ul>
                 <div className="tabs-stage">
@@ -47,6 +38,5 @@ export const Tabs = () => {
                     </div>
                 </div>
             </div>
-        </>
     )
 }
