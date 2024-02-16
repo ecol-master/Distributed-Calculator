@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -22,54 +23,57 @@ var (
 
 type Response struct {
 	StatusCode   int    // ответ 200, 400 или 500
-	Result       int    // результат ответа (если сгенерировано)
-	Status       string // текущий статус обработки выражения
 	ExpressionID string // ID запроса
 }
 
 // handler listen "http://localhost:8000/new_expression?value={}&id={}"
 func HandlerNewExpression(w http.ResponseWriter, r *http.Request) {
-	var response Response
-
 	exprValue := r.URL.Query().Get("value")
 	expressionID := r.URL.Query().Get("id")
+	log.Printf("handler /new_expression, expressionID=\"%s\"", expressionID)
 
 	expression, err := ex.NewExpression(exprValue, expressionID)
 	appStorage.AddExpression(*expression)
 
 	go calculator.CalculateExpression(appStorage, expression)
+
+	response := Response{ExpressionID: expressionID}
 	if err != nil {
 		response.StatusCode = 400
-		response.ExpressionID = expressionID
 	} else {
 		response.StatusCode = 200
 	}
-	response.ExpressionID = expressionID
 
 	responseBytes, err := json.Marshal(response)
+
 	if err == nil {
 		fmt.Fprint(w, string(responseBytes))
 	}
+	log.Printf("processed /new_expression with value=\"%s\" and status=%d", expression.Expression, response.StatusCode)
 }
 
 func HandlerListExpressions(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handler /list_of_expressions")
 	result := []ex.Expression{}
 	for _, v := range appStorage.Data() {
 		result = append(result, v)
 	}
-	fmt.Println(result)
 	data, err := json.Marshal(result)
 	if err != nil {
 		fmt.Fprint(w, "[]")
+		log.Printf("processed /list_of_expressions with error=%s", err)
+		return
 	}
-	fmt.Println(string(data))
+
 	fmt.Fprint(w, string(data))
+	log.Printf("processed /list_of_expressions with %d expression", len(result))
 }
 
 func HandlerGetOneExpression(w http.ResponseWriter, r *http.Request) {
 	expressionID := r.URL.Query().Get("id")
-	expression, found := appStorage.GetExpressionByID(expressionID)
+	log.Printf("handler /get_expression expressionID=\"%s\"", expressionID)
 
+	expression, found := appStorage.GetExpressionByID(expressionID)
 	if !found {
 		fmt.Fprint(w, "{Error: true}")
 		return
@@ -81,21 +85,27 @@ func HandlerGetOneExpression(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprint(w, string(response))
+	log.Printf("processed /get_expression expressionID=\"%s\"", expressionID)
 }
 
 func HandlerGetConfig(w http.ResponseWriter, r *http.Request) {
+	log.Printf("handler /get_config ")
+
 	response, err := json.Marshal(config)
 	if err != nil {
 		fmt.Fprint(w, "{\"Error\": \"true\"}")
 	}
-	fmt.Println(string(response))
+
 	fmt.Fprint(w, string(response))
+	log.Printf("processed /get_config send config settings=\"%s\"", config.AsString())
 }
 
 func HandlePostConfig(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	// var newConfig conf.Config
-	decoder.Decode(config)
 
-	// fmt.Println(newConfig)
+	// create newConfig to check correct new values for config settings
+	var newConfig conf.Config
+	decoder.Decode(&newConfig)
+	config.CopySettings(newConfig)
+	log.Printf("processes post /set_config, config_value=\"%s\"", config.AsString())
 }

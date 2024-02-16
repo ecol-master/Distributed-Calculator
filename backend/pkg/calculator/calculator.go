@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +23,7 @@ func NewCalculator(cfg *conf.Config) *Calculator {
 }
 
 func (c *Calculator) CalculateExpression(appStorage *storage.Storage, expr *ex.Expression) {
+	log.Printf("start calculating expression with with value=\"%s\" and id=\"%s\"", expr.Expression, expr.ExpressionID)
 
 	stackNumbers := stack.NewStack[int]()
 
@@ -55,6 +57,7 @@ func (c *Calculator) CalculateExpression(appStorage *storage.Storage, expr *ex.E
 	}
 
 	appStorage.Update(*expr)
+	log.Printf("finished calculating expression with with value=\"%s\" and id=\"%s\"", expr.Expression, expr.ExpressionID)
 }
 
 func GetTwoValues(s *stack.Stack[int]) (int, int, error) {

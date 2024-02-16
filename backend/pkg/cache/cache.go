@@ -5,13 +5,15 @@ import (
 	"sync"
 )
 
+type CacheData = map[string]ex.Expression
+
 type Cache struct {
 	mutex sync.Mutex
-	data  map[string]ex.Expression
+	data  CacheData
 }
 
 func NewCache() *Cache {
-	return &Cache{data: make(map[string]ex.Expression)}
+	return &Cache{data: make(CacheData)}
 }
 
 func (c *Cache) Update(expr ex.Expression) {
@@ -20,7 +22,7 @@ func (c *Cache) Update(expr ex.Expression) {
 	c.mutex.Unlock()
 }
 
-func (c *Cache) GetAllData() map[string]ex.Expression {
+func (c *Cache) GetAllData() CacheData {
 	return c.data
 }
 
@@ -35,10 +37,10 @@ func (c *Cache) AddExpression(expr ex.Expression) {
 	c.mutex.Unlock()
 }
 
-func (c *Cache) Data() map[string]ex.Expression {
+func (c *Cache) Data() CacheData {
 	return c.data
 }
 
-func (c *Cache) SetData(newData map[string]ex.Expression) {
+func (c *Cache) SetData(newData CacheData) {
 	c.data = newData
 }
