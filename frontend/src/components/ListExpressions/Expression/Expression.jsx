@@ -56,16 +56,11 @@ export const Expression = ({expression}) => {
     }
 
     const renderResultBlock = () => {
-        console.log(expr)
+        let text, image
         if (expr.Status == ExpressionStatuses.StatusError) {
-            return (
-                <>
-                    <p>Expression is not Valid</p>
-                    <div>{ErrorSvg()}</div>
-                </>
-            )
-        }
-        if (expr.Status == ExpressionStatuses.StatusCalculating) {
+            text = "Expression is not Valid"
+            image = ErrorSvg()
+        }else if (expr.Status == ExpressionStatuses.StatusCalculating) {
             return (
                 <>
                     <p>Calculating</p>
@@ -77,12 +72,15 @@ export const Expression = ({expression}) => {
                     </button>
                 </>
             )
+        }else{
+            text = `Result: ${expr.Result}`
+            image = DoneSvg()
         }
 
         return (
             <>
-                <p>Result: {expr.Result}</p>
-                <div>{DoneSvg()}</div>
+                <p>{text}</p>
+                <div>{image}</div>
             </>
         )
     }

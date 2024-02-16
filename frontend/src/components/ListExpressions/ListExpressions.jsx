@@ -7,18 +7,15 @@ import axios from "axios"
 export const ListExpressions = () => {
     const [loaded, setLoaded] = useState(false)
     const [exprList, setExprList] = useState([])
-    const url = "http://localhost:8000/list_of_expressions"
-
+    
     const fetchExpressions = () => {
-        axios.get(url).then((response) => {
+        axios.get("http://localhost:8000/list_of_expressions").then((response) => {
             setExprList(response.data)
         })
     }
 
     useEffect(() => {
-        if (loaded) {
-            return
-        }
+        if (loaded) return
         fetchExpressions()
         setLoaded(true)
     }, [loaded])

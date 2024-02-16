@@ -55,10 +55,7 @@ export const ConfigView = () => {
             devideDelay: devideDelay * NanoSecToSec,
         }
 
-        const url = "http://localhost:8000/set_config"
-        axios.post(url, data).then((response) => {
-            alert("Данные отправились")
-        })
+        axios.post("http://localhost:8000/set_config", data).then(alert("Данные отправились"))
     }
 
     return (

@@ -10,7 +10,6 @@ export const Tabs = () => {
 
     const getClass = (tabVal) => {
         if (tabVal == activeTab) {
-            console.log("here")
             return "active"
         }
         return "hide"
