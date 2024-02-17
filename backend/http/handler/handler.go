@@ -17,7 +17,7 @@ var (
 	config     = conf.NewConfig()
 	calculator = calc.NewCalculator(config)
 
-	syncStorageInterval = time.Second * 5
+	syncStorageInterval = time.Second * 30
 	appStorage          = storage.NewStorage("../data/data.json", syncStorageInterval)
 )
 

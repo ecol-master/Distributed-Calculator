@@ -12,6 +12,7 @@ type Cache struct {
 	data  CacheData
 }
 
+// Cache constructor
 func NewCache() *Cache {
 	return &Cache{data: make(CacheData)}
 }
@@ -22,10 +23,7 @@ func (c *Cache) Update(expr ex.Expression) {
 	c.mutex.Unlock()
 }
 
-func (c *Cache) GetAllData() CacheData {
-	return c.data
-}
-
+// returns expression from cache.data
 func (c *Cache) GetExpressionByID(expessionID string) (ex.Expression, bool) {
 	value, found := c.data[expessionID]
 	return value, found
@@ -37,6 +35,7 @@ func (c *Cache) AddExpression(expr ex.Expression) {
 	c.mutex.Unlock()
 }
 
+// returns private field cache.data
 func (c *Cache) Data() CacheData {
 	return c.data
 }

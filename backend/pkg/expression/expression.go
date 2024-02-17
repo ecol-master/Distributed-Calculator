@@ -27,19 +27,8 @@ type Expression struct {
 	Status         string
 }
 
-func GetOperationRank(operation string) (int, error) {
-	if operation == "+" || operation == "-" {
-		return 1, nil
-	}
-	if operation == "*" || operation == "/" {
-		return 2, nil
-	}
-	if operation == "(" || operation == ")" {
-		return 3, nil
-	}
-	return -1, ErrOperationIsNotValid
-}
-
+// constructor for new expression
+// -exprValue - request query
 func NewExpression(exprValue string, expressionID string) (*Expression, error) {
 	expression := parseExpressionValue(exprValue)
 	expr := &Expression{
@@ -86,7 +75,7 @@ func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, oper
 		return polishNotation, stackOperations, nil
 	}
 	size := len(stackOperations.Array)
-	operaionRank, err := GetOperationRank(operation)
+	operaionRank, err := getOperationRank(operation)
 	if err != nil {
 		return polishNotation, stackOperations, err
 	}
@@ -95,7 +84,7 @@ func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, oper
 		if err != nil {
 			return polishNotation, stackOperations, err
 		}
-		lastOpRank, _ := GetOperationRank(lastOperaion)
+		lastOpRank, _ := getOperationRank(lastOperaion)
 		if err != nil {
 			return polishNotation, stackOperations, err
 		}
@@ -116,9 +105,9 @@ func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, oper
 
 // PN - polish notation
 func convertExprToPN(expr string) (string, error) {
-	fmt.Println(expr)
 	stackOperations := stack.NewStack[string]()
 	polishNotation := ""
+
 	for _, value := range strings.Split(strings.Trim(expr, "\n ,.!?"), " ") {
 		_, err := strconv.Atoi(value)
 		if err == nil {
@@ -138,4 +127,21 @@ func convertExprToPN(expr string) (string, error) {
 		polishNotation += stackOperations.Array[i] + " "
 	}
 	return polishNotation, nil
+}
+
+// function return arithmetic operation rank
+// + or - - 1
+// * or / - 2
+// ( or ) - 3
+func getOperationRank(operation string) (int, error) {
+	if operation == "+" || operation == "-" {
+		return 1, nil
+	}
+	if operation == "*" || operation == "/" {
+		return 2, nil
+	}
+	if operation == "(" || operation == ")" {
+		return 3, nil
+	}
+	return -1, ErrOperationIsNotValid
 }
