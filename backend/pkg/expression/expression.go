@@ -3,7 +3,6 @@ package expression
 import (
 	"distributed_calculator/pkg/stack"
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -58,7 +57,6 @@ func parseExpressionValue(exprValue string) string {
 func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, operation string) (string, *stack.Stack[string], error) {
 	if operation == ")" {
 		for {
-			fmt.Println(stackOperations.Array)
 			if len(stackOperations.Array) == 0 {
 				break
 			}
