@@ -6,10 +6,9 @@ import (
 	"strings"
 	"time"
 
-	conf "distributed_calculator/pkg/config"
-	ex "distributed_calculator/pkg/expression"
-	"distributed_calculator/pkg/stack"
-	"distributed_calculator/pkg/storage"
+	conf "distributed_calculator/internal/config"
+	ex "distributed_calculator/internal/expression"
+	"distributed_calculator/internal/storage"
 )
 
 type Calculator struct {
@@ -25,7 +24,7 @@ func NewCalculator(cfg *conf.Config) *Calculator {
 func (c *Calculator) CalculateExpression(appStorage *storage.Storage, expr *ex.Expression) {
 	log.Printf("start calculating expression with with value=\"%s\" and id=\"%s\"", expr.Expression, expr.ExpressionID)
 
-	stackNumbers := stack.NewStack[int]()
+	stackNumbers := ex.NewStack[int]()
 
 	for _, value := range strings.Split(strings.Trim(expr.PolishNotation, " \n"), " ") {
 		number, err := strconv.Atoi(value)
@@ -60,37 +59,37 @@ func (c *Calculator) CalculateExpression(appStorage *storage.Storage, expr *ex.E
 	log.Printf("finished calculating expression with with value=\"%s\" and id=\"%s\"", expr.Expression, expr.ExpressionID)
 }
 
-func GetTwoValues(s *stack.Stack[int]) (int, int, error) {
+func GetTwoValues(s *ex.Stack[int]) (int, int, error) {
 	n1, err1 := s.Pop()
 	n2, err2 := s.Pop()
 	if err1 != nil || err2 != nil {
-		return 0, 0, stack.ErrGetElementFromStack
+		return 0, 0, ex.ErrGetElementFromStack
 	}
 	return n1, n2, nil
 }
 
-func Sum(s *stack.Stack[int]) {
+func Sum(s *ex.Stack[int]) {
 	n1, n2, err := GetTwoValues(s)
 	if err == nil {
 		s.Push(n2 + n1)
 	}
 }
 
-func Diff(s *stack.Stack[int]) {
+func Diff(s *ex.Stack[int]) {
 	n1, n2, err := GetTwoValues(s)
 	if err == nil {
 		s.Push(n2 - n1)
 	}
 }
 
-func Multiply(s *stack.Stack[int]) {
+func Multiply(s *ex.Stack[int]) {
 	n1, n2, err := GetTwoValues(s)
 	if err == nil {
 		s.Push(n2 * n1)
 	}
 }
 
-func Devide(s *stack.Stack[int]) {
+func Devide(s *ex.Stack[int]) {
 	n1, n2, err := GetTwoValues(s)
 	if err == nil {
 		s.Push(n2 / n1)

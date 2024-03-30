@@ -1,7 +1,6 @@
 package expression
 
 import (
-	"distributed_calculator/pkg/stack"
 	"errors"
 	"strconv"
 	"strings"
@@ -17,14 +16,6 @@ const (
 	StatusCalculating = "calculating"
 	StatusFinished    = "finished"
 )
-
-type Expression struct {
-	ExpressionID   string
-	Expression     string
-	PolishNotation string
-	Result         int
-	Status         string
-}
 
 // constructor for new expression
 // -exprValue - request query
@@ -54,7 +45,7 @@ func parseExpressionValue(exprValue string) string {
 	return exprValue
 }
 
-func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, operation string) (string, *stack.Stack[string], error) {
+func addHigherOpsToPN(stackOperations *Stack[string], polishNotation, operation string) (string, *Stack[string], error) {
 	if operation == ")" {
 		for {
 			if len(stackOperations.Array) == 0 {
@@ -103,7 +94,7 @@ func addHigherOpsToPN(stackOperations *stack.Stack[string], polishNotation, oper
 
 // PN - polish notation
 func convertExprToPN(expr string) (string, error) {
-	stackOperations := stack.NewStack[string]()
+	stackOperations := NewStack[string]()
 	polishNotation := ""
 
 	for _, value := range strings.Split(strings.Trim(expr, "\n ,.!?"), " ") {

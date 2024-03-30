@@ -1,16 +1,10 @@
-package cache
+package storage
 
 import (
-	ex "distributed_calculator/pkg/expression"
-	"sync"
+	ex "distributed_calculator/internal/expression"
 )
 
 type CacheData = map[string]ex.Expression
-
-type Cache struct {
-	mutex sync.Mutex
-	data  CacheData
-}
 
 // Cache constructor
 func NewCache() *Cache {

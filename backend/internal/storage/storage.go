@@ -1,26 +1,18 @@
 package storage
 
 import (
-	cache "distributed_calculator/pkg/cache"
-	ex "distributed_calculator/pkg/expression"
+	ex "distributed_calculator/internal/expression"
 	"encoding/json"
 	"log"
 	"os"
 	"time"
 )
 
-type Storage struct {
-	filepath string
-	ch       *cache.Cache
-	interval time.Duration
-	stop     chan struct{}
-}
-
 func NewStorage(fp string, syncInterval time.Duration) *Storage {
 
 	storage := &Storage{
 		filepath: fp,
-		ch:       cache.NewCache(),
+		ch:       NewCache(),
 		interval: syncInterval,
 		stop:     make(chan struct{}),
 	}
@@ -57,8 +49,8 @@ func (s *Storage) GetExpressionByID(exprID string) (ex.Expression, bool) {
 }
 
 // function open file and add new data to cache
-func (s *Storage) loadFileData() (cache.CacheData, error) {
-	fileData := make(cache.CacheData)
+func (s *Storage) loadFileData() (CacheData, error) {
+	fileData := make(CacheData)
 
 	file, err := os.Open(s.filepath)
 	if err != nil {
@@ -69,7 +61,7 @@ func (s *Storage) loadFileData() (cache.CacheData, error) {
 	decoder.Decode(&fileData)
 
 	if fileData == nil {
-		return make(cache.CacheData), nil
+		return make(CacheData), nil
 	}
 	return fileData, nil
 }
@@ -106,7 +98,7 @@ func (s *Storage) dumpToFile(logger *log.Logger) {
 	if err != nil {
 		return
 	}
-	fileData := make(cache.CacheData)
+	fileData := make(CacheData)
 	decoder := json.NewDecoder(file)
 	decoder.Decode(&fileData)
 	logger.Println("get from file", fileData)
@@ -138,6 +130,6 @@ func (s *Storage) Update(expr ex.Expression) {
 	s.ch.Update(expr)
 }
 
-func (s *Storage) Data() cache.CacheData {
+func (s *Storage) Data() CacheData {
 	return s.ch.Data()
 }

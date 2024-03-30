@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	calc "distributed_calculator/pkg/calculator"
-	conf "distributed_calculator/pkg/config"
-	ex "distributed_calculator/pkg/expression"
-	storage "distributed_calculator/pkg/storage"
+	conf "distributed_calculator/internal/config"
+
+	calc "distributed_calculator/internal/calculator"
+	ex "distributed_calculator/internal/expression"
+	storage "distributed_calculator/internal/storage"
 )
 
 var (

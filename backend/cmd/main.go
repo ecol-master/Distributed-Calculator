@@ -1,7 +1,7 @@
 package main
 
 import (
-	"distributed_calculator/http"
+	"distributed_calculator/internal/server"
 	"log"
 	"os"
 )
@@ -9,13 +9,14 @@ import (
 func main() {
 	setupLog()
 	log.Printf("App started")
-	http.Run()
+
+	server.Run()
 }
 
 func setupLog() {
 	logFile, err := os.OpenFile("../data/info.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 
 	log.SetOutput(logFile)

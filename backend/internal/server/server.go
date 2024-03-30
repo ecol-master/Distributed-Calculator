@@ -1,7 +1,7 @@
-package http
+package server
 
 import (
-	"distributed_calculator/http/handler"
+	"distributed_calculator/internal/server/handler"
 	"net/http"
 
 	"github.com/gorilla/handlers"
