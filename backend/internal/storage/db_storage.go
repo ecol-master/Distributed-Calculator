@@ -52,7 +52,7 @@ func (s *DBStorage) insertExpression(expr *expression.Expression) error {
 	var q = `
 	INSERT INTO expressions (expression, user_id) values($1, $2)
 	`
-	if _, err := s.db.ExecContext(context.TODO(), q, expr.Expression, expr.ExpressionID); err != nil {
+	if _, err := s.db.ExecContext(context.TODO(), q, expr.Expression, expr.UserID); err != nil {
 		return err
 	}
 
