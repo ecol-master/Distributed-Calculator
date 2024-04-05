@@ -1,135 +1,140 @@
 package storage
 
-// import (
-// 	ex "distributed_calculator/internal/expression"
-// 	"encoding/json"
-// 	"log"
-// 	"os"
-// 	"time"
-// )
+import (
+	"context"
+	"database/sql"
+	"distributed_calculator/internal/expression"
+	"distributed_calculator/internal/users"
 
-// func NewStorage(fp string, syncInterval time.Duration) *Storage {
+	_ "github.com/mattn/go-sqlite3"
+)
 
-// 	storage := &Storage{
-// 		filepath: fp,
-// 		ch:       NewCache(),
-// 		interval: syncInterval,
-// 		stop:     make(chan struct{}),
-// 	}
+func NewStorage(filename string) *Storage {
+	db, err := sql.Open("sqlite3", filename)
+	if err != nil {
+		panic(err)
+	}
 
-// 	fileData, err := storage.loadFileData()
-// 	if err != nil {
-// 	} else {
-// 		storage.ch.SetData(fileData)
-// 	}
+	err = db.PingContext(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+	storage := &Storage{db: db}
+	err = storage.createTables()
 
-// 	if syncInterval > 0 {
-// 		go storage.syncWithFile()
-// 	}
+	if err != nil {
+		panic(err)
+	}
+	return storage
+}
 
-// 	return storage
-// }
+func (s *Storage) createTables() error {
+	const (
+		expressionsTable = `
+		CREATE TABLE IF NOT EXISTS expressions(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			expression TEXT NOT NULL,
+			user_id INTEGER NOT NULL,
+			result INTEGER DEFAULT 0,
+			stage INTEGER DEFAULT 0,
+			FOREIGN KEY (user_id) REFERENCES users(id)
+		);
+		`
+		usersTable = `
+		CREATE TABLE IF NOT EXISTS users(
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				login TEXT NOT NULL,
+				password TEXT NOT NULL
+		);
+		`
+	)
 
-// func (s *Storage) GetExpressionByID(exprID string) (ex.Expression, bool) {
-// 	expr, found := s.ch.GetExpressionByID(exprID)
+	if _, err := s.db.ExecContext(context.TODO(), expressionsTable); err != nil {
+		return err
+	}
 
-// 	if found {
-// 		return expr, found
-// 	}
+	if _, err := s.db.ExecContext(context.TODO(), usersTable); err != nil {
+		return err
+	}
 
-// 	fileData, err := s.loadFileData()
+	return nil
+}
 
-// 	if err != nil {
-// 		return ex.Expression{}, false
-// 	}
+// INSERT INTO TABLES
+func (s *Storage) InsertExpression(ctx context.Context, expression string, userID int) (int64, error) {
+	var q = `
+	INSERT INTO expressions (expression, user_id) values($1, $2)
+	`
 
-// 	s.ch.SetData(fileData)
-// 	expr, found = s.ch.GetExpressionByID(exprID)
-// 	return expr, found
-// }
+	res, err := s.db.ExecContext(ctx, q, expression, userID)
+	if err != nil {
+		return 0, err
+	}
 
-// // function open file and add new data to cache
-// func (s *Storage) loadFileData() (CacheData, error) {
-// 	fileData := make(CacheData)
+	return res.LastInsertId()
+}
 
-// 	file, err := os.Open(s.filepath)
-// 	if err != nil {
-// 		return fileData, err
-// 	}
+func (s *Storage) InsertUser(ctx context.Context, login, password string) (int64, error) {
+	var q = `
+	INSERT INTO users (login, password) values($1, $2)
+	`
+	res, err := s.db.ExecContext(ctx, q, login, password)
+	if err != nil {
+		return 0, err
+	}
+	return res.LastInsertId()
+}
 
-// 	decoder := json.NewDecoder(file)
-// 	decoder.Decode(&fileData)
+// SELECT FROM TABLES
+func (s *Storage) SelectExpressionByID(ctx context.Context, expressionID int) (expression.Expression, error) {
+	e := expression.Expression{}
+	var q = `
+		SELECT id, expression, user_id, result, stage FROM expressions WHERE id = $1
+	`
+	err := s.db.QueryRowContext(ctx, q, expressionID).Scan(&e.ID, &e.Expression, &e.UserID, &e.Result, &e.Stage)
+	return e, err
+}
 
-// 	if fileData == nil {
-// 		return make(CacheData), nil
-// 	}
-// 	return fileData, nil
-// }
+func (s *Storage) SelectExpressionsByUserID(ctx context.Context, userID int) ([]expression.Expression, error) {
+	var expressions []expression.Expression
+	var q = `
+	SELECT id, expression, user_id, result, stage FROM expressions WHERE user_id = $1
+	`
+	rows, err := s.db.QueryContext(ctx, q, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		e := expression.Expression{}
+		err := rows.Scan(&e.ID, &e.Expression, &e.UserID, &e.Result, &e.Stage)
+		if err != nil {
+			return nil, err
+		}
+		expressions = append(expressions, e)
+	}
 
-// // function add new expression to cache and to data file
-// // every 5 seconds
-// func (s *Storage) AddExpression(newExpr ex.Expression) {
-// 	s.ch.AddExpression(newExpr)
-// }
+	return expressions, nil
+}
 
-// func (s *Storage) syncWithFile() {
-// 	ticker := time.NewTicker(s.interval)
-// 	flags := log.Ldate | log.Ltime | log.Lshortfile
-// 	syncLogFile, err := os.OpenFile("../data/sync_storage.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-// 	if err != nil {
-// 		os.Exit(1)
-// 	}
-// 	syncLogger := log.New(syncLogFile, "sync_storage", flags)
-// 	syncLogger.Printf("Initialize syncLogger")
-// 	for {
-// 		select {
-// 		case <-ticker.C:
-// 			s.dumpToFile(syncLogger)
-// 		case <-s.stop:
-// 			ticker.Stop()
-// 			return
-// 		}
-// 	}
-// }
+func (s *Storage) SelectUserByID(ctx context.Context, userID int) (users.User, error) {
+	u := users.User{}
+	var q = `
+	SELECT id, login, password FROM users WHERE id = $1
+	`
+	err := s.db.QueryRowContext(ctx, q, userID).Scan(&u.ID, &u.Login, &u.Password)
+	return u, err
+}
 
-// func (s *Storage) dumpToFile(logger *log.Logger) {
-// 	logger.Printf("start dumping new entities to dump storage file")
-// 	file, err := os.OpenFile(s.filepath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-// 	if err != nil {
-// 		return
-// 	}
-// 	fileData := make(CacheData)
-// 	decoder := json.NewDecoder(file)
-// 	decoder.Decode(&fileData)
-// 	logger.Println("get from file", fileData)
+// UPDATE
 
-// 	var newEntities, changedEntities int
-// 	for k, v := range s.ch.Data() {
-// 		value, found := fileData[k]
-// 		if !found {
-// 			fileData[k] = v
-// 			newEntities++
-// 			continue
-// 		}
-// 		if value.Status != v.Status {
-// 			fileData[k] = value
-// 			changedEntities++
-// 		}
-// 	}
-// 	// don't update storage if nothing changed
-// 	if newEntities == 0 && changedEntities == 0 {
-// 		return
-// 	}
+func (s *Storage) UpdateExpression(ctx context.Context, expr expression.Expression) error {
+	var q = `
+	UPDATE users SET result = $1, stage = $2 WHERE id = $3
+	`
+	if _, err := s.db.QueryContext(ctx, q, expr.Result, expr.Stage, expr.ID); err != nil {
+		return err
+	}
 
-// 	encoder := json.NewEncoder(file)
-// 	encoder.Encode(fileData)
-// 	logger.Printf("write to dump storage file new_entities=%d, changed_entities=%d", newEntities, changedEntities)
-// }
-
-// func (s *Storage) Update(expr ex.Expression) {
-// 	s.ch.Update(expr)
-// }
-
-// func (s *Storage) Data() CacheData {
-// 	return s.ch.Data()
-// }
+	return nil
+}

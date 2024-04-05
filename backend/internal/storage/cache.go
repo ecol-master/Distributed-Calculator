@@ -1,10 +1,10 @@
 package storage
 
-import (
-	ex "distributed_calculator/internal/expression"
-)
+// import (
+// 	ex "distributed_calculator/internal/expression"
+// )
 
-type CacheData = map[string]ex.Expression
+// type CacheData = map[string]ex.Expression
 
 // // Cache constructor
 // func NewCache() *Cache {
