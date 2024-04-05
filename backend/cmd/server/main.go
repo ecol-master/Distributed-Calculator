@@ -10,9 +10,7 @@ func main() {
 	setupLog()
 
 	os.Mkdir("../db", 0666)
-
 	log.Printf("App started")
-
 	server.Run()
 }
 
