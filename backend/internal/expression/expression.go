@@ -5,14 +5,18 @@ import (
 )
 
 const (
-	StageError       = 0
-	StageCalculating = 1
-	StageCalculated  = 2
+	StageCreated     = 0
+	StageError       = 1
+	StageCalculating = 2
+	StageCalculated  = 3
 )
 
 type Expression struct {
+	ID         int
 	Expression string
 	UserID     int
+	Result     int
+	Stage      int
 }
 
 func parseExpressionValue(exprValue string) string {

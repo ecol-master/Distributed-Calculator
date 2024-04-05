@@ -13,7 +13,7 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	defaultDelay := 15 * time.Second
+	defaultDelay := 1 * time.Second
 	return &Config{
 		SumDelay:      defaultDelay,
 		DiffDelay:     defaultDelay,

@@ -1,0 +1,58 @@
+syntax = "proto3";
+package storage;
+option go_package = "distributed_calculator/internal/proto";
+
+// structures
+message Expression {
+    int32 id = 1;
+    string expression = 2;
+    int64 user_id = 3;
+    int64 result = 4;
+    int32 stage = 5;
+}
+message Empty {}
+
+// Create Expression
+message CreateExpressionRequest {
+    string expression = 1;
+    int32 userID = 2;
+}
+
+message CreateExpressionResponse { int32 expressionID = 1; }
+
+// Create User
+message CreateUserRequest {
+    string login = 1;
+    string password = 2;
+}
+
+message CreateUserResponse { int64 userID = 1; }
+
+// Update Expression
+message UpdateExpressionRequest { Expression expression = 1; }
+
+// message UpdateExpressionResponse { bool success = 1; }
+
+// Select User Expressions
+message SelectUserExpressionsRequest { int32 userID = 1; }
+
+message SelectUserExpressionsResponse { repeated Expression expressions = 1; }
+
+// Select Expression
+message SelectExpressionRequest { int32 expressionID = 1; }
+message SelectExpressionResponse { Expression expression = 1; }
+
+// SERVICE
+service StorageService {
+    rpc CreateExpression(CreateExpressionRequest)
+        returns (CreateExpressionResponse);
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+
+    rpc UpdateExpression(UpdateExpressionRequest)
+        returns (Empty);
+
+    rpc SelectUserExpressions(SelectUserExpressionsRequest)
+        returns (SelectUserExpressionsResponse);
+    rpc SelectExpression(SelectExpressionRequest)
+        returns (SelectExpressionResponse);
+}

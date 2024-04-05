@@ -1,0 +1,15 @@
+syntax = "proto3";
+package worker;
+option go_package = "distributed_calculator/internal/proto";
+
+message CalculateRequest{
+    int32 expressionID = 1;
+}
+
+message CalculateResponse{
+    bool recieved = 1;
+}
+
+service WorkerService{
+    rpc Calculate (CalculateRequest) returns (CalculateResponse);
+}
