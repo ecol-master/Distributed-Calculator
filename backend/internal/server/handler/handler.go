@@ -28,10 +28,10 @@ type Response struct {
 }
 
 // handler listen "http://localhost:8000/new_expression?value={}&id={}"
+// v2 handler listen "http://localhost:8000/new_expression?value={}"
 func HandlerNewExpression(w http.ResponseWriter, r *http.Request) {
 	exprValue := r.URL.Query().Get("value")
-	expressionID := r.URL.Query().Get("id")
-	log.Printf("handler /new_expression, expressionID=\"%s\"", expressionID)
+	log.Printf("handler /new_expression with value=\"%s\"", exprValue)
 
 	expression, err := ex.NewExpression(exprValue, expressionID)
 	appStorage.AddExpression(*expression)

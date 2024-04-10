@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+const (
+	WorkerAddress  = "localhost:8000"
+	StorageAddress = "localhost:5000"
+)
+
 type Config struct {
 	SumDelay      time.Duration `json:"sumDelay"`
 	DiffDelay     time.Duration `json:"diffDelay"`
