@@ -98,7 +98,7 @@ func main() {
 		log.Println("error starting storage listener")
 		os.Exit(1)
 	}
-	log.Println("starget storage listener")
+	log.Println("started storage listener")
 	grpcServer := grpc.NewServer()
 	storageServiceServer := NewStorageServer()
 	pb.RegisterStorageServiceServer(grpcServer, storageServiceServer)

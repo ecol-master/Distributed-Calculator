@@ -2,16 +2,21 @@ package main
 
 import (
 	"distributed_calculator/internal/server"
+	"fmt"
 	"log"
 	"os"
 )
 
-func main() {
+// initialize application
+func init() {
 	setupLog()
-
 	os.Mkdir("../db", 0666)
+}
+
+func main() {
 	log.Printf("App started")
-	server.Run()
+	err := server.Run()
+	fmt.Println(err)
 }
 
 func setupLog() {
