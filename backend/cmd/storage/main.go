@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"context"
+	"distributed_calculator/internal/config"
 	"distributed_calculator/internal/expression"
 	pb "distributed_calculator/internal/proto"
 	"distributed_calculator/internal/storage"
@@ -46,6 +47,7 @@ func convertFromTransport(expr *pb.Expression) expression.Expression {
 }
 
 func (s *StorageServer) CreateExpression(ctx context.Context, in *pb.CreateExpressionRequest) (*pb.CreateExpressionResponse, error) {
+	log.Println("invoking Create Expression")
 	res, err := s.storage.InsertExpression(ctx, in.Expression, int(in.UserID))
 	return &pb.CreateExpressionResponse{
 		ExpressionID: int32(res),
@@ -53,6 +55,7 @@ func (s *StorageServer) CreateExpression(ctx context.Context, in *pb.CreateExpre
 }
 
 func (s *StorageServer) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	log.Println("invoking Create User")
 	res, err := s.storage.InsertUser(ctx, in.Login, in.Password)
 	return &pb.CreateUserResponse{
 		UserID: res,
@@ -90,10 +93,7 @@ func (s *StorageServer) SelectExpression(ctx context.Context, in *pb.SelectExpre
 }
 
 func main() {
-	host := "localhost"
-	port := "5000"
-	addr := fmt.Sprintf("%s:%s", host, port)
-	lis, err := net.Listen("tcp", addr)
+	lis, err := net.Listen("tcp", config.StorageAddress)
 	if err != nil {
 		log.Println("error starting storage listener")
 		os.Exit(1)

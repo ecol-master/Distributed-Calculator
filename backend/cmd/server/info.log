@@ -1,0 +1,38 @@
+2024/04/11 15:28:20 main.go:14: App started
+2024/04/11 15:33:46 main.go:14: App started
+2024/04/11 15:34:20 main.go:14: App started
+2024/04/11 15:45:59 main.go:14: App started
+2024/04/11 15:50:35 main.go:14: App started
+2024/04/11 15:51:15 main.go:14: App started
+2024/04/11 15:52:38 new_handelrs.go:56: handler /new_expression with value="1"
+2024/04/11 15:52:38 new_handelrs.go:62: failed to create expression: rpc error: code = Unavailable desc = connection error: desc = "error reading server preface: http2: frame too large"
+2024/04/11 15:52:38 new_handelrs.go:64: result of creating new expression:  <nil>
+2024/04/11 15:52:48 new_handelrs.go:56: handler /new_expression with value="1"
+2024/04/11 15:52:48 new_handelrs.go:62: failed to create expression: rpc error: code = Unavailable desc = connection error: desc = "error reading server preface: http2: frame too large"
+2024/04/11 15:52:48 new_handelrs.go:64: result of creating new expression:  <nil>
+2024/04/11 16:07:23 main.go:14: App started
+2024/04/11 16:08:06 main.go:14: App started
+2024/04/11 16:11:14 main.go:14: App started
+2024/04/11 16:15:30 main.go:14: App started
+2024/04/11 16:21:50 main.go:14: App started
+2024/04/11 16:24:17 main.go:14: App started
+2024/04/11 16:26:42 main.go:14: App started
+2024/04/11 16:28:17 main.go:14: App started
+2024/04/11 16:28:30 main.go:14: App started
+2024/04/11 16:30:19 main.go:14: App started
+2024/04/11 16:31:23 main.go:14: App started
+2024/04/11 16:31:41 main.go:14: App started
+2024/04/11 16:33:27 main.go:14: App started
+2024/04/11 16:56:45 main.go:14: App started
+2024/04/11 17:02:54 main.go:14: App started
+2024/04/11 17:04:04 main.go:14: App started
+2024/04/11 17:05:03 new_handelrs.go:65: handler /new_expression with value="1"
+2024/04/11 17:05:03 new_handelrs.go:77: failed to create expression: rpc error: code = Unavailable desc = connection error: desc = "error reading server preface: http2: frame too large"
+2024/04/11 17:05:03 new_handelrs.go:79: result of creating new expression:  <nil>
+2024/04/11 17:06:18 new_handelrs.go:65: handler /new_expression with value="1"
+2024/04/11 17:06:18 new_handelrs.go:77: failed to create expression: rpc error: code = Unavailable desc = connection error: desc = "error reading server preface: http2: frame too large"
+2024/04/11 17:06:18 new_handelrs.go:79: result of creating new expression:  <nil>
+2024/04/11 17:10:25 main.go:14: App started
+2024/04/11 17:10:33 new_handelrs.go:65: handler /new_expression with value="11"
+2024/04/11 17:10:33 new_handelrs.go:77: failed to create expression: rpc error: code = Unavailable desc = connection error: desc = "error reading server preface: http2: frame too large"
+2024/04/11 17:10:33 new_handelrs.go:79: result of creating new expression:  <nil>

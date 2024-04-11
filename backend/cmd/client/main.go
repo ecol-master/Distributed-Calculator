@@ -1,28 +1,20 @@
 package main
 
 import (
-	"context"
-	pb "distributed_calculator/internal/proto"
+	"distributed_calculator/internal/config"
 	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"log"
-	"os"
+	"net/http"
 )
 
 func main() {
-	host := "localhost"
-	port := "8000"
-
-	addr := fmt.Sprintf("%s:%s", host, port) // используем адрес сервера
-	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-
+	var expression string
+	fmt.Printf("Type your exression to calculate: ")
+	fmt.Scanf("%s", &expression)
+	client := &http.Client{}
+	url := fmt.Sprintf("http://%s/new_expression?value=%s", config.ServerAddress, expression)
+	resp, err := client.Get(url)
 	if err != nil {
-		log.Println("could not connect to grpc server: ", err)
-		os.Exit(1)
+		fmt.Println("failed to fetch new expression: ", err)
 	}
-	defer conn.Close()
-	grpcClient := pb.NewWorkerServiceClient(conn)
-	result, err := grpcClient.Calculate(context.TODO(), &pb.CalculateRequest{ExpressionID: 1})
-	fmt.Println(result, err)
+	fmt.Println(resp)
 }

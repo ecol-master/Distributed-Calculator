@@ -2,15 +2,14 @@ package main
 
 import (
 	"context"
+	"distributed_calculator/internal/config"
 	cfg "distributed_calculator/internal/config"
 	pb "distributed_calculator/internal/proto"
 	wk "distributed_calculator/internal/worker"
-	"fmt"
+	"google.golang.org/grpc"
 	"log"
 	"net"
 	"os"
-
-	"google.golang.org/grpc"
 )
 
 type Server struct {
@@ -22,8 +21,8 @@ func NewServer() *Server {
 }
 
 func (s *Server) Calculate(ctx context.Context, in *pb.CalculateRequest) (*pb.CalculateResponse, error) {
-	config := cfg.NewConfig()
-	worker := wk.NewWorker(config)
+	conf := cfg.NewConfig()
+	worker := wk.NewWorker(conf)
 	worker.CalculateExpression(int(in.ExpressionID))
 
 	return &pb.CalculateResponse{
@@ -32,10 +31,7 @@ func (s *Server) Calculate(ctx context.Context, in *pb.CalculateRequest) (*pb.Ca
 }
 
 func main() {
-	host := "localhost"
-	port := "8000"
-	addr := fmt.Sprintf("%s:%s", host, port)
-	lis, err := net.Listen("tcp", addr)
+	lis, err := net.Listen("tcp", config.WorkerAddress)
 	if err != nil {
 		log.Println("error starting worker tcp listener")
 		os.Exit(1)
