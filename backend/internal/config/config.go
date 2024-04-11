@@ -5,9 +5,11 @@ import (
 	"time"
 )
 
+// ADDRESSES
 const (
-	WorkerAddress  = "localhost:8000"
+	WorkerAddress  = "localhost:4000"
 	StorageAddress = "localhost:5000"
+	ServerAddress  = "localhost:8080"
 )
 
 type Config struct {
