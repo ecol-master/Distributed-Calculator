@@ -17,12 +17,12 @@ func main() {
 }
 
 func setupLog() {
-	logFile, err := os.OpenFile("info.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		panic(err)
-	}
+	// logFile, err := os.OpenFile("info.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	log.SetOutput(logFile)
+	log.SetOutput(os.Stdout)
 	flags := log.Lshortfile | log.Ldate | log.Ltime
 	log.SetFlags(flags)
 }

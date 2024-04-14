@@ -26,26 +26,6 @@ func NewStorageServer() *StorageServer {
 	}
 }
 
-func convertToTransport(expr expression.Expression) *pb.Expression {
-	return &pb.Expression{
-		Id:         int32(expr.ID),
-		Expression: expr.Expression,
-		UserId:     int64(expr.UserID),
-		Result:     int64(expr.Result),
-		Stage:      int32(expr.Stage),
-	}
-}
-
-func convertFromTransport(expr *pb.Expression) expression.Expression {
-	return *&expression.Expression{
-		ID:         int(expr.Id),
-		Expression: expr.Expression,
-		UserID:     int(expr.UserId),
-		Result:     int(expr.Result),
-		Stage:      int(expr.Stage),
-	}
-}
-
 func (s *StorageServer) CreateExpression(ctx context.Context, in *pb.CreateExpressionRequest) (*pb.CreateExpressionResponse, error) {
 	log.Println("invoking Create Expression")
 	res, err := s.storage.InsertExpression(ctx, in.Expression, int(in.UserID))
@@ -63,7 +43,7 @@ func (s *StorageServer) CreateUser(ctx context.Context, in *pb.CreateUserRequest
 }
 
 func (s *StorageServer) UpdateExpression(ctx context.Context, in *pb.UpdateExpressionRequest) (*pb.Empty, error) {
-	e := convertFromTransport(in.Expression)
+	e := expression.ConvertFromTransport(in.Expression)
 	res := s.storage.UpdateExpression(ctx, e)
 	return &pb.Empty{}, res
 }
@@ -78,7 +58,7 @@ func (s *StorageServer) SelectUserExpressions(ctx context.Context, in *pb.Select
 
 	var expressions []*pb.Expression
 	for _, e := range res {
-		expressions = append(expressions, convertToTransport(e))
+		expressions = append(expressions, expression.ConvertToTransport(e))
 	}
 	return &pb.SelectUserExpressionsResponse{
 		Expressions: expressions,
@@ -88,7 +68,7 @@ func (s *StorageServer) SelectUserExpressions(ctx context.Context, in *pb.Select
 func (s *StorageServer) SelectExpression(ctx context.Context, in *pb.SelectExpressionRequest) (*pb.SelectExpressionResponse, error) {
 	res, err := s.storage.SelectExpressionByID(ctx, int(in.ExpressionID))
 	return &pb.SelectExpressionResponse{
-		Expression: convertToTransport(res),
+		Expression: expression.ConvertToTransport(res),
 	}, err
 }
 
