@@ -8,7 +8,7 @@ import (
 // ADDRESSES
 const (
 	WorkerAddress  = "localhost:4000"
-	StorageAddress = "localhost:5000"
+	StorageAddress = "localhost:3000"
 	ServerAddress  = "localhost:8080"
 )
 
