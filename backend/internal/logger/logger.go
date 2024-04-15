@@ -11,19 +11,19 @@ var (
 )
 
 func init() {
-	logInfo = log.New(os.Stdout, "INFO: ", log.Lshortfile|log.Ldate|log.Ltime)
+	logInfo = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
 
-	logErr = log.New(os.Stderr, "ERROR: ", log.Lshortfile|log.Ldate|log.Ltime)
+	logErr = log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime)
 }
 
 func Info(args ...any) {
-	logInfo.Println(args)
+	logInfo.Println(args...)
 }
 
 func Error(args ...any) {
-	logErr.Println(args)
+	logErr.Println(args...)
 }
 
 func Fatal(args ...any) {
-	logErr.Fatal(args)
+	logErr.Fatal(args...)
 }
