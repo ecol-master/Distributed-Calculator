@@ -1,15 +1,27 @@
-package server
+package app
 
 import (
+	"distributed_calculator/internal/app/handler"
 	"distributed_calculator/internal/config"
-	"distributed_calculator/internal/server/handler"
+	"distributed_calculator/internal/logger"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
-func Run() error {
+type App struct {
+	server *http.Server
+}
+
+func New() (*App, error) {
+	const (
+		defaultHTTPServerWriteTimeout = time.Second * 15
+		defaultHTTPServerReadTimeout  = time.Second * 15
+	)
+
 	router := mux.NewRouter()
 	router.HandleFunc("/new_expression", handler.HandlerNewExpression).Methods("GET")
 	router.HandleFunc("/new_user", handler.HandlerNewUser).Methods("GET")
@@ -24,5 +36,25 @@ func Run() error {
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 		)(router))
-	return err
+
+	return &App{
+		server: &http.Server{
+			Handler:      router,
+			Addr:         config.ServerAddress,
+			WriteTimeout: defaultHTTPServerWriteTimeout,
+			ReadTimeout:  defaultHTTPServerReadTimeout,
+		},
+	}, err
+}
+
+func (a *App) Run() error {
+	logger.Info("starting http server")
+
+	err := a.server.ListenAndServe()
+	if err != nil && err != http.ErrServerClosed {
+		return fmt.Errorf("server was stop with err: %w", err)
+	}
+
+	logger.Info("server was stop")
+	return nil
 }
