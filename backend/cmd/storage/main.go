@@ -9,6 +9,7 @@ import (
 	"context"
 	"distributed_calculator/internal/config"
 	"distributed_calculator/internal/expression"
+	"distributed_calculator/internal/logger"
 	pb "distributed_calculator/internal/proto"
 	"distributed_calculator/internal/storage"
 
@@ -27,7 +28,7 @@ func NewStorageServer() *StorageServer {
 }
 
 func (s *StorageServer) CreateExpression(ctx context.Context, in *pb.CreateExpressionRequest) (*pb.CreateExpressionResponse, error) {
-	log.Println("invoking Create Expression")
+	logger.Info("invoking Create Expression")
 	res, err := s.storage.InsertExpression(ctx, in.Expression, int(in.UserID))
 	return &pb.CreateExpressionResponse{
 		ExpressionID: int32(res),
@@ -35,7 +36,7 @@ func (s *StorageServer) CreateExpression(ctx context.Context, in *pb.CreateExpre
 }
 
 func (s *StorageServer) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	log.Println("invoking Create User")
+	logger.Info("invoking Create User")
 	res, err := s.storage.InsertUser(ctx, in.Login, in.Password)
 	return &pb.CreateUserResponse{
 		UserID: res,
@@ -49,8 +50,10 @@ func (s *StorageServer) UpdateExpression(ctx context.Context, in *pb.UpdateExpre
 }
 
 func (s *StorageServer) SelectUserExpressions(ctx context.Context, in *pb.SelectUserExpressionsRequest) (*pb.SelectUserExpressionsResponse, error) {
+	logger.Info("invoke SelectUserExpressionslist_of_expressions")
 	res, err := s.storage.SelectExpressionsByUserID(ctx, int(in.UserID))
 	if err != nil {
+		logger.Error("error while select user expressions: ", err.Error())
 		return &pb.SelectUserExpressionsResponse{
 			Expressions: nil,
 		}, err

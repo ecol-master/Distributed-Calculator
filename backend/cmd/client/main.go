@@ -8,8 +8,10 @@ import (
 
 func main() {
 	var expression string
+
 	fmt.Printf("Type your exression to calculate: ")
 	fmt.Scanf("%s", &expression)
+
 	client := &http.Client{}
 	url := fmt.Sprintf("http://%s/new_expression?value=%s", config.ServerAddress, expression)
 	resp, err := client.Get(url)
