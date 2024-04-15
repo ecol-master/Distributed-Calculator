@@ -24,42 +24,42 @@ func NewCreateUserResponse(userID, statusCode int, message string) *CreateUserRe
 	}
 }
 
-type createExpressionResponse struct {
+type CreateExpressionResponse struct {
 	ExpressionID int        `json:"id"`
 	StatusCode   StatusCode `json:"status_code"`
 	ErrorMessage string     `json:"error_message"`
 }
 
-func NewCreateExpressionResponse(expressionID, statusCode StatusCode, errorMessage string) *createExpressionResponse {
-	return &createExpressionResponse{
+func NewCreateExpressionResponse(expressionID, statusCode StatusCode, errorMessage string) *CreateExpressionResponse {
+	return &CreateExpressionResponse{
 		ExpressionID: expressionID,
 		StatusCode:   statusCode,
 		ErrorMessage: errorMessage,
 	}
 }
 
-type selectExpressionResponse struct {
+type SelectExpressionResponse struct {
 	expression.Expression
 	StatusCode   StatusCode `json:"status_code"`
 	ErrorMessage string     `json:"error_message"`
 }
 
-func NewSelectExpressionResponse(e expression.Expression, statusCode StatusCode, message string) *selectExpressionResponse {
-	return &selectExpressionResponse{
+func NewSelectExpressionResponse(e expression.Expression, statusCode StatusCode, message string) *SelectExpressionResponse {
+	return &SelectExpressionResponse{
 		Expression:   e,
 		StatusCode:   statusCode,
 		ErrorMessage: message,
 	}
 }
 
-type selectUserExpressionsResponse struct {
+type SelectUserExpressionsResponse struct {
 	Expressions  []expression.Expression `json:"expressions"`
 	StatusCode   StatusCode              `json:"status_code"`
 	ErrorMessage string                  `json:"error_message"`
 }
 
-func NewSelectUserExpressionsResponse(expressions []expression.Expression, statusCode StatusCode, message string) *selectUserExpressionsResponse {
-	return &selectUserExpressionsResponse{
+func NewSelectUserExpressionsResponse(expressions []expression.Expression, statusCode StatusCode, message string) *SelectUserExpressionsResponse {
+	return &SelectUserExpressionsResponse{
 		Expressions:  expressions,
 		StatusCode:   statusCode,
 		ErrorMessage: message,
