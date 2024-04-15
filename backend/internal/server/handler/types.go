@@ -10,14 +10,14 @@ const (
 	StatusServerError = StatusCode(500)
 )
 
-type createUserResponse struct {
+type CreateUserResponse struct {
 	UserID       int        `json:"id"`
 	StatusCode   StatusCode `json:"status_code"`
 	ErrorMessage string     `json:"error_message"`
 }
 
-func NewCreateUserResponse(userID, statusCode int, message string) *createUserResponse {
-	return &createUserResponse{
+func NewCreateUserResponse(userID, statusCode int, message string) *CreateUserResponse {
+	return &CreateUserResponse{
 		UserID:       userID,
 		StatusCode:   statusCode,
 		ErrorMessage: message,
@@ -47,6 +47,20 @@ type selectExpressionResponse struct {
 func NewSelectExpressionResponse(e expression.Expression, statusCode StatusCode, message string) *selectExpressionResponse {
 	return &selectExpressionResponse{
 		Expression:   e,
+		StatusCode:   statusCode,
+		ErrorMessage: message,
+	}
+}
+
+type selectUserExpressionsResponse struct {
+	Expressions  []expression.Expression `json:"expressions"`
+	StatusCode   StatusCode              `json:"status_code"`
+	ErrorMessage string                  `json:"error_message"`
+}
+
+func NewSelectUserExpressionsResponse(expressions []expression.Expression, statusCode StatusCode, message string) *selectUserExpressionsResponse {
+	return &selectUserExpressionsResponse{
+		Expressions:  expressions,
 		StatusCode:   statusCode,
 		ErrorMessage: message,
 	}

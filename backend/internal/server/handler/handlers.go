@@ -41,15 +41,16 @@ func init() {
 	logger.Info("connections to storage and worker successful initialize")
 }
 
-// HandlerNewUser "http://localhost:8080/new_user?login={},password={}"
+// HandlerNewUser "http://localhost:8080/new_user?login={}&password={}"
 func HandlerNewUser(w http.ResponseWriter, r *http.Request) {
 	logger.Info("invoke /new_user handler")
 
 	login := r.URL.Query().Get("login")
 	password := r.URL.Query().Get("password")
+	logger.Info("new user password: ", password, " login: ", login)
 
 	var bytes []byte
-	if strings.TrimSpace(login) == "" || strings.TrimSpace(password) == "" {
+	if (strings.TrimSpace(login) == "") || (strings.TrimSpace(password) == "") {
 		bytes = marshalJSONResponse(NewCreateUserResponse(0, StatusClientError, "login and password can not be empty"))
 		fmt.Fprint(w, string(bytes))
 		return
@@ -67,7 +68,7 @@ func HandlerNewUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandlerNewExpression "http://localhost:8080/new_expression?value={}&id={}"
-// v2 "http://localhost:8080/new_expression?value={},user_id={}"
+// v2 "http://localhost:8080/new_expression?value={}&user_id={}"
 func HandlerNewExpression(w http.ResponseWriter, r *http.Request) {
 	logger.Info("invoke /new_expression handler")
 
@@ -127,6 +128,35 @@ func HandlerSelectExpression(w http.ResponseWriter, r *http.Request) {
 		bytes = marshalJSONResponse(NewSelectExpressionResponse(e, StatusSuccessful, ""))
 	}
 	fmt.Fprint(w, string(bytes))
+}
+
+// HandlerSelectUserExpressions http://localhost:8080/list_of_expressions?user_id={}
+func HandlerSelectUserExpressions(w http.ResponseWriter, r *http.Request) {
+	logger.Info("invoke /list_of_expressions")
+
+	var bytes []byte
+	userID, err := strconv.Atoi(r.URL.Query().Get("user_id"))
+	if err != nil {
+		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse([]expression.Expression{}, StatusClientError, "user_id mush be an interger"))
+		fmt.Fprint(w, string(bytes))
+		return
+	}
+
+	res, err := grpcStorageClient.SelectUserExpressions(context.TODO(), &pb.SelectUserExpressionsRequest{
+		UserID: int32(userID),
+	})
+
+	if err != nil {
+		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse([]expression.Expression{}, StatusServerError, "can not select user expressions"))
+	} else {
+		var exs []expression.Expression
+		for _, e := range res.Expressions {
+			exs = append(exs, expression.ConvertFromTransport(e))
+		}
+		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse(exs, StatusSuccessful, ""))
+	}
+	fmt.Fprint(w, string(bytes))
+
 }
 
 func marshalJSONResponse(response interface{}) []byte {
