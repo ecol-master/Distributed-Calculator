@@ -45,8 +45,15 @@ func init() {
 func HandlerNewUser(w http.ResponseWriter, r *http.Request) {
 	logger.Info("invoke /new_user handler")
 
-	login := r.URL.Query().Get("login")
-	password := r.URL.Query().Get("password")
+	var user struct {
+		Password string `json:"password"`
+		Login    string `json:"login"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&user)
+	fmt.Println("error whlie parsing form: ", err)
+	password, login := user.Password, user.Login
+
 	logger.Info("new user password: ", password, " login: ", login)
 
 	var bytes []byte
@@ -72,30 +79,29 @@ func HandlerNewUser(w http.ResponseWriter, r *http.Request) {
 func HandlerNewExpression(w http.ResponseWriter, r *http.Request) {
 	logger.Info("invoke /new_expression handler")
 
-	exprValue := r.URL.Query().Get("value")
-	userIDValue := r.URL.Query().Get("user_id")
-	userID, err := strconv.Atoi(userIDValue)
+	var expression struct {
+		Value  string `json:"value"`
+		UserID int    `json:"user_id"`
+	}
 
-	var bytes []byte
+	err := json.NewDecoder(r.Body).Decode(&expression)
 	if err != nil {
-		bytes = marshalJSONResponse(NewCreateExpressionResponse(0, StatusClientError, "userId should be an integer"))
-		fmt.Fprint(w, string(bytes))
+		http.Error(w, "error while parsing expression form: "+err.Error(), 500)
+		return
 	}
 
 	res, err := grpcStorageClient.CreateExpression(context.TODO(), &pb.CreateExpressionRequest{
-		Expression: exprValue,
-		UserID:     int32(userID),
+		Expression: expression.Value,
+		UserID:     int32(expression.UserID),
 	})
 
+	var bytes []byte
 	if err != nil {
 		bytes = marshalJSONResponse(NewCreateExpressionResponse(0, StatusServerError, "server error while creating expression"))
 		logger.Info("failed to create expression: ", err.Error())
 		fmt.Fprint(w, string(bytes))
 		return
 	}
-
-	logger.Info("result of creating new expression: ", res)
-
 	resp, err := grpcWorkerClient.Calculate(context.TODO(), &pb.CalculateRequest{
 		ExpressionID: res.ExpressionID,
 	})

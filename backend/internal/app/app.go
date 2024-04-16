@@ -23,8 +23,8 @@ func New() (*App, error) {
 	)
 
 	router := mux.NewRouter()
-	router.HandleFunc("/new_expression", handler.HandlerNewExpression).Methods("GET")
-	router.HandleFunc("/new_user", handler.HandlerNewUser).Methods("GET")
+	router.HandleFunc("/new_expression", handler.HandlerNewExpression).Methods("POST")
+	router.HandleFunc("/new_user", handler.HandlerNewUser).Methods("POST")
 	router.HandleFunc("/list_of_expressions", handler.HandlerSelectUserExpressions).Methods("GET")
 	router.HandleFunc("/get_expression", handler.HandlerSelectExpression).Methods("GET")
 	//	router.HandleFunc("/get_config", handler.HandlerGetConfig).Methods("GET")
