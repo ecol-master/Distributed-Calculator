@@ -44,9 +44,10 @@ func (s *StorageServer) CreateUser(ctx context.Context, in *pb.CreateUserRequest
 }
 
 func (s *StorageServer) UpdateExpression(ctx context.Context, in *pb.UpdateExpressionRequest) (*pb.Empty, error) {
+	logger.Info("invoke update expression", in.Expression)
 	e := expression.ConvertFromTransport(in.Expression)
-	res := s.storage.UpdateExpression(ctx, e)
-	return &pb.Empty{}, res
+	err := s.storage.UpdateExpression(ctx, e)
+	return &pb.Empty{}, err
 }
 
 func (s *StorageServer) SelectUserExpressions(ctx context.Context, in *pb.SelectUserExpressionsRequest) (*pb.SelectUserExpressionsResponse, error) {
@@ -69,6 +70,7 @@ func (s *StorageServer) SelectUserExpressions(ctx context.Context, in *pb.Select
 }
 
 func (s *StorageServer) SelectExpression(ctx context.Context, in *pb.SelectExpressionRequest) (*pb.SelectExpressionResponse, error) {
+	logger.Info("invoke select expression")
 	res, err := s.storage.SelectExpressionByID(ctx, int(in.ExpressionID))
 	return &pb.SelectExpressionResponse{
 		Expression: expression.ConvertToTransport(res),

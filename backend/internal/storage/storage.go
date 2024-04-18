@@ -129,10 +129,8 @@ func (s *Storage) SelectUserByID(ctx context.Context, userID int) (users.User, e
 // UPDATE
 
 func (s *Storage) UpdateExpression(ctx context.Context, expr expression.Expression) error {
-	var q = `
-	UPDATE expressions SET result = $1, stage = $2 WHERE id = $3
-	`
-	if _, err := s.db.QueryContext(ctx, q, expr.Result, expr.Stage, expr.ID); err != nil {
+	var q = `UPDATE expressions SET result = $1, stage = $2 WHERE id = $3`
+	if _, err := s.db.ExecContext(ctx, q, expr.Result, expr.Stage, expr.ID); err != nil {
 		return err
 	}
 
