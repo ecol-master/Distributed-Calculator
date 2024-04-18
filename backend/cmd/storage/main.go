@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -75,6 +76,15 @@ func (s *StorageServer) SelectExpression(ctx context.Context, in *pb.SelectExpre
 	return &pb.SelectExpressionResponse{
 		Expression: expression.ConvertToTransport(res),
 	}, err
+}
+
+// initialize requires directories to store database
+func init() {
+
+	err := os.Mkdir("../../db", 0750)
+	if err != nil && !errors.Is(err, os.ErrExist) {
+		panic(`failed to create a folder "backend/db" to store db, err: ` + err.Error())
+	}
 }
 
 func main() {
