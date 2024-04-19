@@ -7,9 +7,20 @@ import (
 
 // ADDRESSES
 const (
-	WorkerAddress  = "localhost:4000"
-	StorageAddress = "localhost:3000"
-	ServerAddress  = "localhost:8080"
+	// WorkerAddress  = "0.0.0.0:4000"
+	WorkerAddress = "worker:4000"
+	// StorageAddress = "0.0.0.0:3000"
+	StorageAddress = "storage:3000"
+	ServerAddress  = "0.0.0.0:8080"
+
+	// 0.0.0.0 - выход во внешнюю сеть
+	// worker:4000 - обращение ко внутренней сети,
+	// docker сам подставит вместо worker ip адрес контейнера во внутренней подсети
+	// custom
+
+	WorkerPort  = ":4000"
+	StoragePort = ":3000"
+	ServerPort  = ":8080"
 )
 
 type Config struct {

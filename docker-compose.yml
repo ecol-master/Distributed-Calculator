@@ -1,0 +1,48 @@
+version: "3.9"
+services:
+  storage:
+    build:
+      context: .
+      dockerfile: ./docker/storage.Dockerfile
+    container_name: storage
+    hostname: storage
+    platform: linux/x86_64
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - netw
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./docker/worker.Dockerfile
+    container_name: worker
+    hostname: worker
+    platform: linux/x86_64
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    networks:
+      - netw
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app.Dockerfile
+    container_name: app
+    hostname: app
+    platform: linux/x86_64
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   
+    networks:
+      - netw
+            
+networks:
+    netw:
+        name: custom_netw
+        driver: bridge
+        external: true
+# volumes:
+#   symfony-postgres:
