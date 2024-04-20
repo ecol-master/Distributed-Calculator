@@ -1,37 +1,59 @@
 package worker
 
 import (
+	"context"
 	"log"
 	"strconv"
 	"strings"
 	"time"
 
-	conf "distributed_calculator/internal/config"
+	"distributed_calculator/internal/config"
 	"distributed_calculator/internal/expression"
+	"distributed_calculator/internal/logger"
+
+	pb "distributed_calculator/internal/proto"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewWorker(cfg *conf.Config) *Worker {
+func New() (*Worker, error) {
+	connStorage, err := grpc.Dial(config.StorageAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return &Worker{}, err
+	}
+
+	grpcStorageClient := pb.NewStorageServiceClient(connStorage)
 	return &Worker{
-		config: cfg,
+		Config:        config.NewConfig(),
+		StorageClient: grpcStorageClient,
+	}, nil
+}
+
+func (w *Worker) updateExpression(expression *pb.Expression) {
+	_, err := w.StorageClient.UpdateExpression(context.TODO(), &pb.UpdateExpressionRequest{
+		Expression: expression,
+	})
+	if err != nil {
+		logger.Error("failed to update expression, err: ", err.Error())
 	}
 }
 
-func fetchExpression(expressionID int) (expression.Expression, error) {
-	testExpression := expression.NewExpression("1 + 2 * 5", 11)
-	return *testExpression, nil
-}
-
-func (c *Worker) CalculateExpression(expressionID int) {
-	// log.Printf("start calculating expression with with value=\"%s\" and id=\"%s\"", expr.Expression, expr.ExpressionID)
-	expr, _ := fetchExpression(expressionID)
-
+func (w *Worker) calculate(e *pb.Expression) error {
 	stackNumbers := NewStack[int]()
-	converter := NewConverter(expr.Expression)
-	polishNotation, err := converter.Convert()
+	logger.Info("starting converting exprssion: ", e.Expression)
+	polishNotation, err := NewConverter(e.Expression).Convert()
 
 	if err != nil {
-		// adding--
+		logger.Error("failed to convert expression to polish notation, id: ", e.Id, " err: ", err.Error())
+		// TODO: update error in expression
+		e.Stage = expression.StageError
+		w.updateExpression(e)
+		return err
 	}
+
+	e.Stage = expression.StageCalculating
+	w.updateExpression(e)
 
 	for _, value := range strings.Split(strings.Trim(polishNotation, " \n"), " ") {
 		number, err := strconv.Atoi(value)
@@ -41,24 +63,50 @@ func (c *Worker) CalculateExpression(expressionID int) {
 		}
 		if value == "+" {
 			Sum(stackNumbers)
-			time.Sleep(c.config.SumDelay)
+			time.Sleep(w.Config.SumDelay)
 		} else if value == "-" {
 			Diff(stackNumbers)
-			time.Sleep(c.config.DiffDelay)
+			time.Sleep(w.Config.DiffDelay)
 		} else if value == "*" {
 			Multiply(stackNumbers)
-			time.Sleep(c.config.MultiplyDelay)
+			time.Sleep(w.Config.MultiplyDelay)
 		} else if value == "/" {
 			Devide(stackNumbers)
-			time.Sleep(c.config.DevideDelay)
+			time.Sleep(w.Config.DevideDelay)
 		}
 	}
 
-	res, err := stackNumbers.Pop()
-	log.Printf("result of expression: %d", res)
+	result, err := stackNumbers.Pop()
+	if err != nil {
+		logger.Error("failed to calculating result")
+		e.Stage = expression.StageError
+	} else {
+		e.Result = int64(result)
+		e.Stage = expression.StageCalculated
+	}
 
-	// appStorage.Update(*expr)
-	// log.Printf("finished calculating expression with with value=\"%s\" and id=\"%s\"", expr.Expression, expr.ExpressionID)
+	w.updateExpression(e)
+	log.Println("result of expression: ", result, err)
+
+	return nil
+}
+
+func (w *Worker) CalculateExpression(expressionID int) {
+	logger.Info("start calculating expreession with ID: ", expressionID)
+
+	res, err := w.StorageClient.SelectExpression(context.TODO(), &pb.SelectExpressionRequest{
+		ExpressionID: int32(expressionID),
+	})
+
+	if err != nil {
+		logger.Error("failed select expression with id: ", expressionID, " err: ", err.Error())
+		return
+	}
+
+	err = w.calculate(res.Expression)
+	if err != nil {
+		logger.Error("calculate expression with error: " + err.Error())
+	}
 }
 
 func GetTwoValues(s *Stack[int]) (int, int, error) {

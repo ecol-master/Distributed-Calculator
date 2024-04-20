@@ -2,13 +2,15 @@ package worker
 
 import (
 	conf "distributed_calculator/internal/config"
+	pb "distributed_calculator/internal/proto"
 	"errors"
 )
 
 var ErrOperationIsNotValid = errors.New("operation is not allowed")
 
 type Worker struct {
-	config *conf.Config
+	Config        *conf.Config
+	StorageClient pb.StorageServiceClient
 }
 
 type Stack[T string | int] struct {

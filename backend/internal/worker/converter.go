@@ -36,6 +36,7 @@ func (c *PNConverter) addHigherOpsToPN(polishNotation, operation string) (string
 	if err != nil {
 		return polishNotation, err
 	}
+
 	for i := 0; i < size; i++ {
 		lastOperaion, err := c.stackOps.Pop()
 		if err != nil {
@@ -62,7 +63,6 @@ func (c *PNConverter) addHigherOpsToPN(polishNotation, operation string) (string
 
 // PN - polish notation
 func (c *PNConverter) Convert() (string, error) {
-	stackOperations := NewStack[string]()
 	polishNotation := ""
 
 	for _, value := range strings.Split(strings.Trim(c.Expression, "\n ,.!?"), " ") {
@@ -77,11 +77,12 @@ func (c *PNConverter) Convert() (string, error) {
 		}
 
 		if value != ")" {
-			stackOperations.Push(value)
+			c.stackOps.Push(value)
 		}
+
 	}
-	for i := len(stackOperations.Array) - 1; i >= 0; i-- {
-		polishNotation += stackOperations.Array[i] + " "
+	for i := len(c.stackOps.Array) - 1; i >= 0; i-- {
+		polishNotation += c.stackOps.Array[i] + " "
 	}
 	return polishNotation, nil
 }
