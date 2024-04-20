@@ -1,7 +1,6 @@
 package app
 
 import (
-	"distributed_calculator/internal/app/handler"
 	"distributed_calculator/internal/config"
 	"distributed_calculator/internal/logger"
 	"fmt"
@@ -23,10 +22,10 @@ func New() (*App, error) {
 	)
 
 	router := mux.NewRouter()
-	router.HandleFunc("/new_expression", handler.HandlerNewExpression).Methods("POST")
-	router.HandleFunc("/new_user", handler.HandlerNewUser).Methods("POST")
-	router.HandleFunc("/list_of_expressions", handler.HandlerSelectUserExpressions).Methods("GET")
-	router.HandleFunc("/get_expression", handler.HandlerSelectExpression).Methods("GET")
+	router.HandleFunc("/new_expression", HandlerNewExpression).Methods("POST")
+	router.HandleFunc("/new_user", HandlerNewUser).Methods("POST")
+	router.HandleFunc("/list_of_expressions", HandlerSelectUserExpressions).Methods("GET")
+	router.HandleFunc("/get_expression", HandlerSelectExpression).Methods("GET")
 	//	router.HandleFunc("/get_config", handler.HandlerGetConfig).Methods("GET")
 	//	router.HandleFunc("/set_config", handler.HandlePostConfig).Methods("POST")
 

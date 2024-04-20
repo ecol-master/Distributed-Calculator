@@ -1,4 +1,4 @@
-package handler
+package app
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -26,7 +27,7 @@ func init() {
 	connStorage, err := grpc.Dial(config.StorageAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logger.Error("failed connect to storage", err)
-		panic("failed connect to storage")
+		os.Exit(1)
 	}
 	grpcStorageClient = pb.NewStorageServiceClient(connStorage)
 
@@ -34,7 +35,7 @@ func init() {
 	connWorker, err := grpc.Dial(config.WorkerAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logger.Error("failed connect to worker", err)
-		panic("failed connect to worker")
+		os.Exit(1)
 	}
 	grpcWorkerClient = pb.NewWorkerServiceClient(connWorker)
 
@@ -51,7 +52,9 @@ func HandlerNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&user)
-	fmt.Println("error whlie parsing form: ", err)
+	if err != nil {
+		fmt.Println("error whlie parsing form: ", err)
+	}
 	password, login := user.Password, user.Login
 
 	logger.Info("new user password: ", password, " login: ", login)
@@ -67,6 +70,7 @@ func HandlerNewUser(w http.ResponseWriter, r *http.Request) {
 		Login: login, Password: password,
 	})
 	if err != nil {
+		logger.Error("server error while creating user" + err.Error())
 		bytes = marshalJSONResponse(NewCreateUserResponse(0, StatusServerError, "server error while creating user"))
 	} else {
 		bytes = marshalJSONResponse(NewCreateUserResponse(int(res.UserID), StatusSuccessful, ""))
@@ -98,7 +102,7 @@ func HandlerNewExpression(w http.ResponseWriter, r *http.Request) {
 	var bytes []byte
 	if err != nil {
 		bytes = marshalJSONResponse(NewCreateExpressionResponse(0, StatusServerError, "server error while creating expression"))
-		logger.Info("failed to create expression: ", err.Error())
+		logger.Error("failed to create expression: ", err.Error())
 		fmt.Fprint(w, string(bytes))
 		return
 	}
@@ -127,7 +131,8 @@ func HandlerSelectExpression(w http.ResponseWriter, r *http.Request) {
 
 	res, err := grpcStorageClient.SelectExpression(context.TODO(), &pb.SelectExpressionRequest{ExpressionID: int32(expressionID)})
 	if err != nil {
-		msg := "error while selecting expression with ID: " + string(expressionID)
+		logger.Error("error while selecting expression with ID: ", expressionID, " err: ", err.Error())
+		msg := "server error"
 		bytes = marshalJSONResponse(NewSelectExpressionResponse(expression.Expression{}, StatusServerError, msg))
 	} else {
 		e := expression.ConvertFromTransport(res.Expression)
@@ -153,6 +158,7 @@ func HandlerSelectUserExpressions(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
+		logger.Error("can not select user expressions: ", err.Error())
 		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse([]expression.Expression{}, StatusServerError, "can not select user expressions"))
 	} else {
 		var exs []expression.Expression
