@@ -1,7 +1,8 @@
 package main
 
 import (
-	"distributed_calculator/internal/app/handler"
+	"bytes"
+	"distributed_calculator/internal/app"
 	"distributed_calculator/internal/config"
 	"encoding/json"
 	"fmt"
@@ -23,12 +24,12 @@ func TestBase(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	var respUser handler.CreateUserResponse
+	var respUser app.CreateUserResponse
 	err = json.Unmarshal(data, &respUser)
 	if err != nil {
 		t.Error(err)
 	}
-	if respUser.StatusCode != handler.StatusSuccessful {
+	if respUser.StatusCode != app.StatusSuccessful {
 		t.Error("status code is not successful")
 		return
 	}
@@ -46,7 +47,7 @@ func TestBase(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		var respExpression handler.CreateExpressionResponse
+		var respExpression app.CreateExpressionResponse
 		err = json.Unmarshal(data, &respExpression)
 		if err != nil {
 			t.Error(err)
@@ -63,7 +64,7 @@ func TestBase(t *testing.T) {
 			t.Error(err)
 		}
 
-		var respGetExpression handler.SelectExpressionResponse
+		var respGetExpression app.SelectExpressionResponse
 		err = json.Unmarshal(data, &respGetExpression)
 		if err != nil {
 			t.Error(err)
@@ -79,7 +80,10 @@ func TestBase(t *testing.T) {
 	}
 
 	data, err = io.ReadAll(resp.Body)
-	var respUserExpressions handler.SelectUserExpressionsResponse
+	if err != nil {
+		t.Error(err)
+	}
+	var respUserExpressions app.SelectUserExpressionsResponse
 	err = json.Unmarshal(data, &respUserExpressions)
 	if err != nil {
 		t.Error(err)
@@ -87,5 +91,11 @@ func TestBase(t *testing.T) {
 	t.Log("get userId: ", userID, " all expressions: ", respUserExpressions)
 }
 
-func TestLoadUser(t *testing.T) {
+func TestCreateUser(t *testing.T) {
+	client := &http.Client{}
+	url := fmt.Sprintf("http://%s/new_user", config.ServerAddress)
+	data := []byte(`{"login":"admin", "password":"1234"}`)
+	r := bytes.NewReader(data)
+	response, err := client.Post(url, "application/json", r)
+	fmt.Println(response, err)
 }

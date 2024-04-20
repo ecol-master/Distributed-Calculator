@@ -5,16 +5,17 @@ import (
 	"distributed_calculator/internal/config"
 	pb "distributed_calculator/internal/proto"
 	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"os"
 	"testing"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestWorker(t *testing.T) {
 	conn, err := grpc.Dial(config.StorageAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		panic("failed connect to storage")
+		t.Error("failed connect to storage", err)
 		os.Exit(1)
 	}
 	defer conn.Close()

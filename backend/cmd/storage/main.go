@@ -88,9 +88,9 @@ func init() {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", config.StorageAddress)
+	lis, err := net.Listen("tcp", config.StoragePort)
 	if err != nil {
-		log.Println("error starting storage listener")
+		logger.Error("error starting storage listener, err: ", err)
 		os.Exit(1)
 	}
 	log.Println("started storage listener")
