@@ -40,7 +40,7 @@ curl -X POST -H "Content-Type: application/json" --data-binary "{\"login\":\"dev
 
 **Example** `/new_expression`:
 ```
-curl -X POST  -H "Content-Type: application/json" -d "{\"value\":\"1 * 10 + 2 * 3\", \"user_id\":5}" http://localhost:8080/new_expression
+curl -X POST  -H "Content-Type: application/json" --data-binary "{\"value\":\"1 * 10 + 2 * 3\", \"user_id\":5}" http://localhost:8080/new_expression
 ```
 
 **Example** `/get_expression`
