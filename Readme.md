@@ -33,10 +33,11 @@ Server HTTP requests:
 - GET  /list_of_expressions
 
 # Use Cases    
+When you start a project, you can type these commands to create new user, create new expression, get expression.
 
 **Example** `/new_user`:
 ```
-curl -d '{"login":"dmitrydev", "password":"fdljs1131jff"}' -H "Content-Type: application/json" -X POST http://localhost:8080/new_user
+curl -d '{"login":"developer", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8080/new_user
 ```
 
 **Example** `/new_expression`:
