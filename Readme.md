@@ -13,14 +13,12 @@
 
 # How Run Project
 
-Создание подсети для общения контейнеров внутри сети
-```
-docker network create -d bridge custom_netw
-```
+Make file contains such commands to start a project:
+- `make docker-start` - starting a project (http and grpc servers)
 
-Запуск и сборка контейнера
+
 ```
-docker compose up -d --build
+make docker-start
 ```
 
 
@@ -37,7 +35,7 @@ When you start a project, you can type these commands to create new user, create
 
 **Example** `/new_user`:
 ```
-curl -d '{"login":"developer", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8080/new_user
+curl --X POST -H "Content-Type: application/json" --data-binary '{"login":"developer", "password":"password"}' http://localhost:8080/new_user
 ```
 
 **Example** `/new_expression`:
