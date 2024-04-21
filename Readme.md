@@ -35,12 +35,12 @@ When you start a project, you can type these commands to create new user, create
 
 **Example** `/new_user`:
 ```
-curl --X POST -H "Content-Type: application/json" --data-binary "{\"login\":\"developer\", \"password\":\"password\"}" http://localhost:8080/new_user
+curl -X POST -H "Content-Type: application/json" --data-binary "{\"login\":\"developer\", \"password\":\"password\"}" http://localhost:8080/new_user
 ```
 
 **Example** `/new_expression`:
 ```
-curl -d '{"value":"1+2+3", "user_id":5}' -H "Content-Type: application/json" -X POST http://localhost:8080/new_expression
+curl -X POST  -H "Content-Type: application/json" -d "{\"value\":\"1 * 10 + 2 * 3\", \"user_id\":5}" http://localhost:8080/new_expression
 ```
 
 **Example** `/get_expression`
