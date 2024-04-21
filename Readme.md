@@ -15,11 +15,7 @@
 
 Make file contains such commands to start a project:
 - `make docker-start` - starting a project (http and grpc servers)
-
-
-```
-make docker-start
-```
+- `make test-proejct` - running all test for project (for some packages there are no test)
 
 
 # API Documentation
