@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"distributed_calculator/internal/config"
-	"distributed_calculator/internal/expression"
+	"distributed_calculator/internal/entities"
 	"distributed_calculator/internal/logger"
 
 	pb "distributed_calculator/internal/proto"
@@ -47,12 +47,12 @@ func (w *Worker) calculate(e *pb.Expression) error {
 	if err != nil {
 		logger.Error("failed to convert expression to polish notation, id: ", e.Id, " err: ", err.Error())
 		// TODO: update error in expression
-		e.Stage = expression.StageError
+		e.Stage = entities.StageError
 		w.updateExpression(e)
 		return err
 	}
 
-	e.Stage = expression.StageCalculating
+	e.Stage = entities.StageCalculating
 	w.updateExpression(e)
 
 	for _, value := range strings.Split(strings.Trim(polishNotation, " \n"), " ") {
@@ -79,10 +79,10 @@ func (w *Worker) calculate(e *pb.Expression) error {
 	result, err := stackNumbers.Pop()
 	if err != nil {
 		logger.Error("failed to calculating result")
-		e.Stage = expression.StageError
+		e.Stage = entities.StageError
 	} else {
 		e.Result = int64(result)
-		e.Stage = expression.StageCalculated
+		e.Stage = entities.StageCalculated
 	}
 
 	w.updateExpression(e)

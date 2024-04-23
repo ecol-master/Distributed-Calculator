@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 	"distributed_calculator/internal/config"
-	"distributed_calculator/internal/expression"
+	"distributed_calculator/internal/entities"
 	"distributed_calculator/internal/logger"
 	pb "distributed_calculator/internal/proto"
 	"encoding/json"
@@ -124,7 +124,7 @@ func HandlerSelectExpression(w http.ResponseWriter, r *http.Request) {
 	var bytes []byte
 	expressionID, err := strconv.Atoi(r.URL.Query().Get("expression_id"))
 	if err != nil {
-		bytes = marshalJSONResponse(NewSelectExpressionResponse(expression.Expression{}, StatusClientError, "value expression id should be integer"))
+		bytes = marshalJSONResponse(NewSelectExpressionResponse(entities.Expression{}, StatusClientError, "value expression id should be integer"))
 		fmt.Fprint(w, string(bytes))
 		return
 	}
@@ -133,9 +133,9 @@ func HandlerSelectExpression(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.Error("error while selecting expression with ID: ", expressionID, " err: ", err.Error())
 		msg := "server error"
-		bytes = marshalJSONResponse(NewSelectExpressionResponse(expression.Expression{}, StatusServerError, msg))
+		bytes = marshalJSONResponse(NewSelectExpressionResponse(entities.Expression{}, StatusServerError, msg))
 	} else {
-		e := expression.ConvertFromTransport(res.Expression)
+		e := entities.ConvertFromTransport(res.Expression)
 		bytes = marshalJSONResponse(NewSelectExpressionResponse(e, StatusSuccessful, ""))
 	}
 	fmt.Fprint(w, string(bytes))
@@ -148,7 +148,7 @@ func HandlerSelectUserExpressions(w http.ResponseWriter, r *http.Request) {
 	var bytes []byte
 	userID, err := strconv.Atoi(r.URL.Query().Get("user_id"))
 	if err != nil {
-		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse([]expression.Expression{}, StatusClientError, "user_id mush be an interger"))
+		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse([]entities.Expression{}, StatusClientError, "user_id mush be an interger"))
 		fmt.Fprint(w, string(bytes))
 		return
 	}
@@ -159,11 +159,11 @@ func HandlerSelectUserExpressions(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		logger.Error("can not select user expressions: ", err.Error())
-		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse([]expression.Expression{}, StatusServerError, "can not select user expressions"))
+		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse([]entities.Expression{}, StatusServerError, "can not select user expressions"))
 	} else {
-		var exs []expression.Expression
+		var exs []entities.Expression
 		for _, e := range res.Expressions {
-			exs = append(exs, expression.ConvertFromTransport(e))
+			exs = append(exs, entities.ConvertFromTransport(e))
 		}
 		bytes = marshalJSONResponse(NewSelectUserExpressionsResponse(exs, StatusSuccessful, ""))
 	}

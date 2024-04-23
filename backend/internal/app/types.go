@@ -1,6 +1,8 @@
 package app
 
-import "distributed_calculator/internal/expression"
+import (
+	"distributed_calculator/internal/entities"
+)
 
 type StatusCode = int
 
@@ -39,12 +41,12 @@ func NewCreateExpressionResponse(expressionID, statusCode StatusCode, errorMessa
 }
 
 type SelectExpressionResponse struct {
-	expression.Expression
+	entities.Expression
 	StatusCode   StatusCode `json:"status_code"`
 	ErrorMessage string     `json:"error_message"`
 }
 
-func NewSelectExpressionResponse(e expression.Expression, statusCode StatusCode, message string) *SelectExpressionResponse {
+func NewSelectExpressionResponse(e entities.Expression, statusCode StatusCode, message string) *SelectExpressionResponse {
 	return &SelectExpressionResponse{
 		Expression:   e,
 		StatusCode:   statusCode,
@@ -53,12 +55,12 @@ func NewSelectExpressionResponse(e expression.Expression, statusCode StatusCode,
 }
 
 type SelectUserExpressionsResponse struct {
-	Expressions  []expression.Expression `json:"expressions"`
-	StatusCode   StatusCode              `json:"status_code"`
-	ErrorMessage string                  `json:"error_message"`
+	Expressions  []entities.Expression `json:"expressions"`
+	StatusCode   StatusCode            `json:"status_code"`
+	ErrorMessage string                `json:"error_message"`
 }
 
-func NewSelectUserExpressionsResponse(expressions []expression.Expression, statusCode StatusCode, message string) *SelectUserExpressionsResponse {
+func NewSelectUserExpressionsResponse(expressions []entities.Expression, statusCode StatusCode, message string) *SelectUserExpressionsResponse {
 	return &SelectUserExpressionsResponse{
 		Expressions:  expressions,
 		StatusCode:   statusCode,

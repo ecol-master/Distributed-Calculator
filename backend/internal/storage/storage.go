@@ -3,8 +3,7 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"distributed_calculator/internal/expression"
-	"distributed_calculator/internal/users"
+	"distributed_calculator/internal/entities"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -86,8 +85,8 @@ func (s *Storage) InsertUser(ctx context.Context, login, password string) (int64
 }
 
 // SELECT FROM TABLES
-func (s *Storage) SelectExpressionByID(ctx context.Context, expressionID int) (expression.Expression, error) {
-	e := expression.Expression{}
+func (s *Storage) SelectExpressionByID(ctx context.Context, expressionID int) (entities.Expression, error) {
+	e := entities.Expression{}
 	var q = `
 		SELECT id, expression, user_id, result, stage FROM expressions WHERE id = $1
 	`
@@ -95,8 +94,8 @@ func (s *Storage) SelectExpressionByID(ctx context.Context, expressionID int) (e
 	return e, err
 }
 
-func (s *Storage) SelectExpressionsByUserID(ctx context.Context, userID int) ([]expression.Expression, error) {
-	var expressions []expression.Expression
+func (s *Storage) SelectExpressionsByUserID(ctx context.Context, userID int) ([]entities.Expression, error) {
+	var expressions []entities.Expression
 	var q = `
 	SELECT id, expression, user_id, result, stage FROM expressions WHERE user_id = $1
 	`
@@ -106,7 +105,7 @@ func (s *Storage) SelectExpressionsByUserID(ctx context.Context, userID int) ([]
 	}
 	defer rows.Close()
 	for rows.Next() {
-		e := expression.Expression{}
+		e := entities.Expression{}
 		err := rows.Scan(&e.ID, &e.Expression, &e.UserID, &e.Result, &e.Stage)
 		if err != nil {
 			return nil, err
@@ -117,8 +116,8 @@ func (s *Storage) SelectExpressionsByUserID(ctx context.Context, userID int) ([]
 	return expressions, nil
 }
 
-func (s *Storage) SelectUserByID(ctx context.Context, userID int) (users.User, error) {
-	u := users.User{}
+func (s *Storage) SelectUserByID(ctx context.Context, userID int) (entities.User, error) {
+	u := entities.User{}
 	var q = `
 	SELECT id, login, password FROM users WHERE id = $1
 	`
@@ -128,7 +127,7 @@ func (s *Storage) SelectUserByID(ctx context.Context, userID int) (users.User, e
 
 // UPDATE
 
-func (s *Storage) UpdateExpression(ctx context.Context, expr expression.Expression) error {
+func (s *Storage) UpdateExpression(ctx context.Context, expr entities.Expression) error {
 	var q = `UPDATE expressions SET result = $1, stage = $2 WHERE id = $3`
 	if _, err := s.db.ExecContext(ctx, q, expr.Result, expr.Stage, expr.ID); err != nil {
 		return err

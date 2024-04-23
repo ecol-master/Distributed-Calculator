@@ -1,4 +1,4 @@
-package expression
+package entities
 
 import (
 	pb "distributed_calculator/internal/proto"
