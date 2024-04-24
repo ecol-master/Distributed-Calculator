@@ -5,6 +5,7 @@ import (
 	"distributed_calculator/internal/app"
 	"distributed_calculator/internal/config"
 	"encoding/json"
+  "distributed_calculator/internal/logger"
 	"fmt"
 	"io"
 	"net/http"
@@ -97,5 +98,8 @@ func TestCreateUser(t *testing.T) {
 	data := []byte(`{"login":"admin", "password":"1234"}`)
 	r := bytes.NewReader(data)
 	response, err := client.Post(url, "application/json", r)
-	fmt.Println(response, err)
+  if err != nil{
+    logger.Error("failed while GET: /new_user", err) 
+  }
+  fmt.Println(response, err)
 }

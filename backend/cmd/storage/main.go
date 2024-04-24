@@ -9,7 +9,7 @@ import (
 
 	"context"
 	"distributed_calculator/internal/config"
-	"distributed_calculator/internal/expression"
+	"distributed_calculator/internal/entities"
 	"distributed_calculator/internal/logger"
 	pb "distributed_calculator/internal/proto"
 	"distributed_calculator/internal/storage"
@@ -46,7 +46,7 @@ func (s *StorageServer) CreateUser(ctx context.Context, in *pb.CreateUserRequest
 
 func (s *StorageServer) UpdateExpression(ctx context.Context, in *pb.UpdateExpressionRequest) (*pb.Empty, error) {
 	logger.Info("invoke update expression", in.Expression)
-	e := expression.ConvertFromTransport(in.Expression)
+	e := entities.ConvertFromTransport(in.Expression)
 	err := s.storage.UpdateExpression(ctx, e)
 	return &pb.Empty{}, err
 }
@@ -63,7 +63,7 @@ func (s *StorageServer) SelectUserExpressions(ctx context.Context, in *pb.Select
 
 	var expressions []*pb.Expression
 	for _, e := range res {
-		expressions = append(expressions, expression.ConvertToTransport(e))
+		expressions = append(expressions, entities.ConvertToTransport(e))
 	}
 	return &pb.SelectUserExpressionsResponse{
 		Expressions: expressions,
@@ -74,7 +74,7 @@ func (s *StorageServer) SelectExpression(ctx context.Context, in *pb.SelectExpre
 	logger.Info("invoke select expression")
 	res, err := s.storage.SelectExpressionByID(ctx, int(in.ExpressionID))
 	return &pb.SelectExpressionResponse{
-		Expression: expression.ConvertToTransport(res),
+		Expression: entities.ConvertToTransport(res),
 	}, err
 }
 

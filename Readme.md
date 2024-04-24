@@ -41,7 +41,7 @@ curl -X POST  -H "Content-Type: application/json" --data-binary "{\"value\":\"1 
 
 **Example** `/get_expression`
 ```
-curl  -X GET "http://localhost:8080/get_expression?expression_id=35"
+curl  -X GET "http://localhost:8080/get_expression?expression_id=1"
 ```
 
 
